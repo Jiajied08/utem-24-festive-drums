@@ -61,6 +61,14 @@ Main purposes:
 - ✅ Emergent Google OAuth (for admin auth)
 - ✅ WhatsApp direct links (wa.me format)
 
+## Session Updates (2026-02-01)
+- ✅ Removed stats-section (Years/Performances/Members counters) from Home.jsx
+- ✅ Added dynamic Hero Carousel on Home page (auto-rotates every 6s with arrows + dot navigation)
+- ✅ New backend endpoints: `GET/POST/DELETE /api/hero-images` with object storage
+- ✅ New admin page `/admin/hero` — drag & drop upload, caption EN/中文, delete
+- ✅ Cleaned unused imports (Users, Award, Calendar) in Home.jsx
+- ✅ Backend CRUD verified via curl (POST → GET → files → DELETE all 200)
+
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
 - **Frontend Pages**: ✅ All marketing routes load with content

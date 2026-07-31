@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Users, Award, Calendar, Instagram } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import HeroCarousel from '@/components/HeroCarousel';
 import axios from 'axios';
 
@@ -94,52 +94,6 @@ const Home = () => {
               </Link>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-[#F5F1E7]" data-testid="stats-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center"
-              data-testid="stat-years"
-            >
-              <div className="flex justify-center mb-4">
-                <Calendar size={48} className="text-[#410C09]" />
-              </div>
-              <h3 className="font-heading text-4xl font-bold text-[#410C09] mb-2">{yearsOfExperience}+</h3>
-              <p className="text-gray-600">{t('Years of Experience', '年经验')}</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-center"
-              data-testid="stat-performances"
-            >
-              <div className="flex justify-center mb-4">
-                <Award size={48} className="text-[#410C09]" />
-              </div>
-              <h3 className="font-heading text-4xl font-bold text-[#410C09] mb-2">{clubInfo?.performances_count || 0}+</h3>
-              <p className="text-gray-600">{t('Performances', '演出')}</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center"
-              data-testid="stat-members"
-            >
-              <div className="flex justify-center mb-4">
-                <Users size={48} className="text-[#410C09]" />
-              </div>
-              <h3 className="font-heading text-4xl font-bold text-[#410C09] mb-2">{clubInfo?.members_count || 0}+</h3>
-              <p className="text-gray-600">{t('Active Members', '活跃成员')}</p>
-            </motion.div>
-          </div>
         </div>
       </section>
 
