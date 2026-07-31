@@ -62,12 +62,19 @@ Main purposes:
 - ✅ WhatsApp direct links (wa.me format)
 
 ## Session Updates (2026-02-01)
-- ✅ Removed stats-section (Years/Performances/Members counters) from Home.jsx
+- ✅ Removed stats-section (Years/Performances/Members counters) from Home.jsx and pruned unused icon imports
 - ✅ Added dynamic Hero Carousel on Home page (auto-rotates every 6s with arrows + dot navigation)
 - ✅ New backend endpoints: `GET/POST/DELETE /api/hero-images` with object storage
 - ✅ New admin page `/admin/hero` — drag & drop upload, caption EN/中文, delete
 - ✅ Cleaned unused imports (Users, Award, Calendar) in Home.jsx
 - ✅ Backend CRUD verified via curl (POST → GET → files → DELETE all 200)
+- ✅ Replaced Emergent OAuth with email/password login (`POST /api/auth/login`, bcrypt + session_token cookie)
+- ✅ Seeded admin ding.jiae@gmail.com / Utem24Drum!
+- ✅ Fixed Performance Booking nav to smooth-scroll (no page reload) + URL hash update
+- ✅ Removed About page/route
+- ✅ Booking section restyled to maroon (#410C09) + moved to bottom (under Instagram)
+- ✅ Council page (/team) and nav link restored
+- ✅ New `/admin/club-info` page — admin can edit homepage intro (about_en/about_zh), mission, and club numbers
 
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
