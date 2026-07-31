@@ -45,7 +45,7 @@ const Home = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('https://www.instagram.com/p/DXV5kFakuhT/media/?size=l'), url('https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85')`
           }}
         />
         <div className="absolute inset-0 hero-overlay" />

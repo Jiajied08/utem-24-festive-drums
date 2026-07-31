@@ -16,6 +16,9 @@ import Contact from '@/pages/Contact';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminInstagram from '@/pages/admin/AdminInstagram';
+import AdminGallery from '@/pages/admin/AdminGallery';
+import AdminEnquiries from '@/pages/admin/AdminEnquiries';
+import AdminSettings from '@/pages/admin/AdminSettings';
 
 function AppContent() {
   const location = useLocation();
@@ -49,6 +52,30 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminInstagram />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/gallery"
+          element={
+            <ProtectedRoute>
+              <AdminGallery />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/enquiries"
+          element={
+            <ProtectedRoute>
+              <AdminEnquiries />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute>
+              <AdminSettings />
             </ProtectedRoute>
           }
         />

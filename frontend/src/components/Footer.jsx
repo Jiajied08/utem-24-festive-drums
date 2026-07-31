@@ -27,9 +27,23 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-heading text-2xl font-bold mb-4" data-testid="footer-club-name">
-              {t('UTeM 24 Festive Drum Club', 'UTeM 二十四节令鼓队')}
-            </h3>
+            <div className="flex items-center gap-3 mb-4">
+              {settings?.logo_path ? (
+                <img
+                  src={`${API}/files/${settings.logo_path}`}
+                  alt="UTeM 24FD Logo"
+                  className="w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full border-2 border-[#D4AF37] bg-[#410C09] flex items-center justify-center font-heading text-[#D4AF37] text-lg font-bold">
+                  廿四
+                </div>
+              )}
+              <h3 className="font-heading text-2xl font-bold" data-testid="footer-club-name">
+                {t('UTeM 24 Festive Drum Club', 'UTeM 二十四节令鼓队')}
+              </h3>
+            </div>
             <p className="text-gray-400 text-sm">
               {t(
                 'Tradition in Every Beat. Unity in Every Performance.',

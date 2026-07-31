@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const Navbar = () => {
   const { language, toggleLanguage, t } = useLanguage();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [logoPath, setLogoPath] = useState('');
   const isAdmin = location.pathname.startsWith('/admin');
+
+  useEffect(() => {
+    if (isAdmin) return;
+    axios.get(`${API}/settings`).then(r => setLogoPath(r.data.logo_path || '')).catch(() => {});
+  }, [isAdmin]);
 
   if (isAdmin) return null;
 
@@ -26,8 +36,22 @@ const Navbar = () => {
     <nav className="sticky-nav bg-[#410C09]/80 text-white" data-testid="main-nav">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="font-heading text-xl font-bold" data-testid="nav-logo">
-            {t('UTeM 24FD', 'UTeM 24FD')}
+          <Link to="/" className="flex items-center gap-3" data-testid="nav-logo">
+            {logoPath ? (
+              <img
+                src={`${API}/files/${logoPath}`}
+                alt="UTeM 24FD Logo"
+                className="w-10 h-10 rounded-full object-cover border-2 border-[#D4AF37]"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full border-2 border-[#D4AF37] bg-[#410C09] flex items-center justify-center font-heading text-[#D4AF37] text-sm font-bold">
+                廿四
+              </div>
+            )}
+            <span className="font-heading text-xl font-bold">
+              {t('UTeM 24FD', 'UTeM 24FD')}
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">

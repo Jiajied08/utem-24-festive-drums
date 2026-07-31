@@ -188,6 +188,7 @@ class SiteSettings(BaseModel):
     youtube: str = "UCfhI7K13yEpZgO7cIQ6kPoA"
     address_en: str = "Universiti Teknikal Malaysia Melaka, Jalan Hang Tuah Jaya, 76100 Durian Tunggal, Malacca"
     address_zh: str = "马来西亚技术大学，Jalan Hang Tuah Jaya，76100 Durian Tunggal，马六甲"
+    logo_path: str = ""
 
 class JoinUsSubmission(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -582,6 +583,16 @@ async def update_settings(settings: SiteSettings, authorization: str = Header(No
     await get_user_from_auth(authorization=authorization)
     await db.site_settings.update_one({}, {"$set": settings.model_dump()}, upsert=True)
     return {"message": "Updated"}
+
+@api_router.post("/settings/logo")
+async def upload_logo(file: UploadFile = File(...), authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    ext = file.filename.split(".")[-1] if "." in file.filename else "png"
+    path = f"{APP_NAME}/logo/{uuid.uuid4()}.{ext}"
+    data = await file.read()
+    result = put_object(path, data, file.content_type or "image/png")
+    await db.site_settings.update_one({}, {"$set": {"logo_path": result["path"]}}, upsert=True)
+    return {"logo_path": result["path"]}
 
 @api_router.post("/join-us")
 async def submit_join_us(submission: JoinUsSubmission):
