@@ -36,7 +36,7 @@ const Team = () => {
               {t('Meet', '认识')}
             </p>
             <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium">
-              {t('Our Team', '我们的团队')}
+              {t('Council', '理事会')}
             </h1>
           </motion.div>
         </div>
@@ -47,7 +47,7 @@ const Team = () => {
           {team.length === 0 ? (
             <div className="text-center py-20" data-testid="team-empty">
               <p className="text-gray-500 text-lg">
-                {t('Team information will be available soon.', '团队信息即将推出。')}
+                {t('Council information will be available soon.', '理事会信息即将推出。')}
               </p>
             </div>
           ) : (

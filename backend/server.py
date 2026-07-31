@@ -187,6 +187,7 @@ class SiteSettings(BaseModel):
     facebook: str = "utem24festivedrums"
     tiktok: str = ""
     youtube: str = "UCfhI7K13yEpZgO7cIQ6kPoA"
+    whatsapp_group_link: str = ""
     address_en: str = "Universiti Teknikal Malaysia Melaka, Jalan Hang Tuah Jaya, 76100 Durian Tunggal, Malacca"
     address_zh: str = "马来西亚技术大学，Jalan Hang Tuah Jaya，76100 Durian Tunggal，马六甲"
     logo_path: str = ""

@@ -72,6 +72,50 @@ const JoinUs = () => {
         </div>
       </section>
 
+      {settings?.whatsapp_group_link && (
+        <section className="py-16 bg-white" data-testid="qr-section">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-gradient-to-br from-[#410C09] to-[#5A110D] rounded-sm p-8 md:p-12 text-white flex flex-col md:flex-row items-center gap-8 md:gap-12">
+              <div className="flex-shrink-0 bg-white p-4 rounded-sm shadow-2xl">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(settings.whatsapp_group_link)}&size=280x280&margin=0&ecc=M`}
+                  alt="WhatsApp Group QR Code"
+                  className="w-64 h-64 md:w-72 md:h-72"
+                  data-testid="whatsapp-qr-code"
+                />
+                <p className="text-center text-[#410C09] font-bold mt-3 text-sm">
+                  🥁 {t('Scan to Join', '扫描加入')}
+                </p>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-3">
+                  {t('Direct Access', '直接加入')}
+                </p>
+                <h2 className="font-heading text-3xl md:text-4xl mb-4">
+                  {t('Scan to Join Our WhatsApp Group', '扫码加入我们的 WhatsApp 群组')}
+                </h2>
+                <p className="text-gray-200 mb-6 leading-relaxed">
+                  {t(
+                    'Skip the form — scan this QR code with your phone camera to join our drummers group chat instantly and start your journey with us.',
+                    '跳过表格 — 用您的手机相机扫描此二维码，立即加入我们的鼓手群聊，开启您的加入之旅。'
+                  )}
+                </p>
+                <a
+                  href={settings.whatsapp_group_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 btn-primary px-6 py-3 rounded-sm"
+                  data-testid="whatsapp-group-link"
+                >
+                  <MessageCircle size={20} />
+                  {t('Open in WhatsApp', '在 WhatsApp 中打开')}
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-20 bg-[#F5F1E7]" data-testid="marketing-copy">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

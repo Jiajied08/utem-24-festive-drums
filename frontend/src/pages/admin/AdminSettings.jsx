@@ -164,6 +164,19 @@ const AdminSettings = ({ user }) => {
                   data-testid="input-email"
                 />
               </div>
+              <div>
+                <Label htmlFor="whatsapp_group_link">WhatsApp Group Invite Link</Label>
+                <Input
+                  id="whatsapp_group_link"
+                  value={settings.whatsapp_group_link || ''}
+                  onChange={(e) => updateField('whatsapp_group_link', e.target.value)}
+                  placeholder="https://chat.whatsapp.com/xxxxxxxx"
+                  data-testid="input-whatsapp-group"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Paste your WhatsApp group invite link — a fresh QR code auto-generates on the Join Us page. Rotate the link anytime and the QR updates instantly.
+                </p>
+              </div>
             </div>
             <div>
               <Label htmlFor="address_en">Address (English)</Label>
