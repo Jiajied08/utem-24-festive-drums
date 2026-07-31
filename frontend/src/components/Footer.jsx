@@ -41,7 +41,7 @@ const Footer = () => {
                 </div>
               )}
               <h3 className="font-heading text-2xl font-bold" data-testid="footer-club-name">
-                {t('UTeM 24 Festive Drum Club', 'UTeM 二十四节令鼓队')}
+                {t('UTeM 24 Festive Drum Club', '技大二十四节令鼓队')}
               </h3>
             </div>
             <p className="text-gray-400 text-sm">

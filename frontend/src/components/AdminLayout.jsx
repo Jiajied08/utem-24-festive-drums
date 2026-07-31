@@ -36,7 +36,6 @@ const AdminLayout = ({ children, user }) => {
     { path: '/admin/history', label: 'History', icon: FileText },
     { path: '/admin/gallery', label: 'Gallery', icon: Image },
     { path: '/admin/instagram', label: 'Instagram Feed', icon: Instagram },
-    { path: '/admin/packages', label: 'Packages', icon: Package },
     { path: '/admin/enquiries', label: 'Enquiries', icon: MessageSquare },
     { path: '/admin/achievements', label: 'Achievements', icon: Trophy },
     { path: '/admin/team', label: 'Team', icon: Users },

@@ -98,6 +98,7 @@ class HistoryEvent(BaseModel):
     title_zh: str
     description_en: str = ""
     description_zh: str = ""
+    image_path: Optional[str] = None
     order: int = 0
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -345,18 +346,60 @@ async def get_history():
     return events
 
 @api_router.post("/history")
-async def create_history(event: HistoryEvent, authorization: str = Header(None)):
+async def create_history(
+    year: int = Form(...),
+    title_en: str = Form(...),
+    title_zh: str = Form(...),
+    description_en: str = Form(""),
+    description_zh: str = Form(""),
+    order: int = Form(0),
+    file: Optional[UploadFile] = File(None),
+    authorization: str = Header(None)
+):
     await get_user_from_auth(authorization=authorization)
+    image_path = None
+    if file and file.filename:
+        ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+        path = f"{APP_NAME}/history/{uuid.uuid4()}.{ext}"
+        data = await file.read()
+        result = put_object(path, data, file.content_type or "image/jpeg")
+        image_path = result["path"]
+    event = HistoryEvent(
+        year=year, title_en=title_en, title_zh=title_zh,
+        description_en=description_en, description_zh=description_zh,
+        order=order, image_path=image_path
+    )
     await db.history_timeline.insert_one(event.model_dump())
     return event
 
 @api_router.put("/history/{event_id}")
-async def update_history(event_id: str, event: HistoryEvent, authorization: str = Header(None)):
+async def update_history(
+    event_id: str,
+    year: int = Form(...),
+    title_en: str = Form(...),
+    title_zh: str = Form(...),
+    description_en: str = Form(""),
+    description_zh: str = Form(""),
+    order: int = Form(0),
+    file: Optional[UploadFile] = File(None),
+    authorization: str = Header(None)
+):
     await get_user_from_auth(authorization=authorization)
-    result = await db.history_timeline.update_one({"id": event_id}, {"$set": event.model_dump()})
+    update_data = {
+        "year": year, "title_en": title_en, "title_zh": title_zh,
+        "description_en": description_en, "description_zh": description_zh,
+        "order": order
+    }
+    if file and file.filename:
+        ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+        path = f"{APP_NAME}/history/{uuid.uuid4()}.{ext}"
+        data = await file.read()
+        result = put_object(path, data, file.content_type or "image/jpeg")
+        update_data["image_path"] = result["path"]
+    result = await db.history_timeline.update_one({"id": event_id}, {"$set": update_data})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Not found")
-    return event
+    return {"message": "Updated"}
 
 @api_router.delete("/history/{event_id}")
 async def delete_history(event_id: str, authorization: str = Header(None)):

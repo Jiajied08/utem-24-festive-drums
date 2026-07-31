@@ -26,10 +26,8 @@ const Navbar = () => {
     { to: '/', label: t('Home', '首页') },
     { to: '/about', label: t('About', '关于') },
     { to: '/history', label: t('History', '历史') },
-    { to: '/performances', label: t('Performances', '演出') },
-    { to: '/packages', label: t('Packages', '配套') },
     { to: '/team', label: t('Team', '团队') },
-    { to: '/contact', label: t('Contact', '联系') },
+    { to: '/join-us', label: t('Join Us', '加入我们') },
   ];
 
   return (

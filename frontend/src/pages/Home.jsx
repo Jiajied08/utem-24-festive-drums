@@ -41,7 +41,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen" data-testid="home-page">
-      <section className="relative h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
+      <section className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden bg-[#0A0A0A]" data-testid="hero-section">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -64,7 +64,7 @@ const Home = () => {
             UTeM 24 Festive Drum Club
           </h1>
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight mb-6" data-testid="hero-title-zh">
-            UTeM 二十四节令鼓队
+            {t('UTeM 二十四节令鼓队', '技大二十四节令鼓队')}
           </h2>
           <p className="text-lg md:text-xl leading-relaxed mb-8 text-gray-200" data-testid="hero-tagline">
             {t(
@@ -73,15 +73,19 @@ const Home = () => {
             )}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/packages">
+            <a
+              href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about booking a performance for my event.', '您好！我想询问有关为我的活动预订演出的事宜。'))}` : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="hero-cta-invite"
+            >
               <Button
                 size="lg"
                 className="btn-primary px-8 py-6 text-lg rounded-sm"
-                data-testid="hero-cta-invite"
               >
                 {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
               </Button>
-            </Link>
+            </a>
             <Link to="/about">
               <Button
                 size="lg"
@@ -196,13 +200,6 @@ const Home = () => {
                 </motion.div>
               ))}
             </div>
-            <div className="text-center mt-12">
-              <Link to="/performances">
-                <Button className="btn-secondary px-6 py-3" data-testid="gallery-view-all">
-                  {t('View All Performances', '查看所有演出')}
-                </Button>
-              </Link>
-            </div>
           </div>
         </section>
       )}
@@ -246,7 +243,7 @@ const Home = () => {
                     style={{ height: '500px', border: 0 }}
                     loading="lazy"
                     scrolling="no"
-                    allowtransparency="true"
+                    allowFullScreen={false}
                     title={`Instagram post ${post.shortcode}`}
                   />
                 </motion.div>

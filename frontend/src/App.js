@@ -9,16 +9,15 @@ import AuthCallback from '@/components/AuthCallback';
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import History from '@/pages/History';
-import Performances from '@/pages/Performances';
-import Packages from '@/pages/Packages';
 import Team from '@/pages/Team';
-import Contact from '@/pages/Contact';
+import JoinUs from '@/pages/JoinUs';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminInstagram from '@/pages/admin/AdminInstagram';
 import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminEnquiries from '@/pages/admin/AdminEnquiries';
 import AdminSettings from '@/pages/admin/AdminSettings';
+import AdminHistory from '@/pages/admin/AdminHistory';
 
 function AppContent() {
   const location = useLocation();
@@ -34,10 +33,9 @@ function AppContent() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/history" element={<History />} />
-        <Route path="/performances" element={<Performances />} />
-        <Route path="/packages" element={<Packages />} />
         <Route path="/team" element={<Team />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/join-us" element={<JoinUs />} />
+        <Route path="/contact" element={<JoinUs />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"
@@ -76,6 +74,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/history"
+          element={
+            <ProtectedRoute>
+              <AdminHistory />
             </ProtectedRoute>
           }
         />

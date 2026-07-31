@@ -24,8 +24,8 @@ const History = () => {
 
   const defaultEvents = [
     { year: 2011, title_en: 'Establishment of UTeM 24 Festive Drum Club', title_zh: 'UTeM 二十四节令鼓队成立', description_en: 'The club was officially founded by passionate students.', description_zh: '该俱乐部由热情的学生正式成立。' },
-    { year: 2025, title_en: 'Participation in 1st National University 24 Festive Drums Competition', title_zh: '参加第一届全国大学24节令鼓比赛', description_en: '', description_zh: '' },
-    { year: 2026, title_en: 'Involvement in 2nd National Inter-University 24 Festive Drums Competition', title_zh: '参加第二届全国大学间24节令鼓比赛', description_en: '', description_zh: '' },
+    { year: 2025, title_en: 'Hosting 1st National University 24 Festive Drums Competition', title_zh: '举办第一届全国大学24节令鼓比赛', description_en: '', description_zh: '' },
+    { year: 2026, title_en: 'Hosting 2nd National Inter-University 24 Festive Drums Competition', title_zh: '举办第二届全国大学间24节令鼓比赛', description_en: '', description_zh: '' },
     { year: new Date().getFullYear(), title_en: 'Present - Continuing the Rhythm', title_zh: '现在 - 继续节奏', description_en: 'Developing a new generation of drummers and keeping the tradition alive.', description_zh: '培养新一代鼓手，让传统保持活力。' }
   ];
 
@@ -69,9 +69,22 @@ const History = () => {
                   <div className="bg-[#F5F1E7] p-6 rounded-sm relative">
                     <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#D4AF37] rounded-full border-4 border-white" />
                     <div className="font-heading text-3xl font-bold text-[#410C09] mb-2">{event.year}</div>
+                    <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-1">
+                      {t('Held', '举办')}
+                    </p>
                     <h3 className="font-bold text-xl mb-2 text-[#0A0A0A]">
                       {t(event.title_en, event.title_zh)}
                     </h3>
+                    {event.image_path && (
+                      <div className="my-4 overflow-hidden rounded-sm">
+                        <img
+                          src={`${API}/files/${event.image_path}`}
+                          alt={t(event.title_en, event.title_zh)}
+                          className="w-full h-48 object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                     {(event.description_en || event.description_zh) && (
                       <p className="text-gray-700">
                         {t(event.description_en, event.description_zh)}
