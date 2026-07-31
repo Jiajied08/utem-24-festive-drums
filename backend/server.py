@@ -12,6 +12,8 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import requests
 import io
+import bcrypt
+import secrets
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -252,7 +254,8 @@ async def get_user_from_auth(authorization: str = Header(None), auth: str = Quer
     user_doc = await db.users.find_one({"user_id": session_doc["user_id"]}, {"_id": 0})
     if not user_doc:
         raise HTTPException(status_code=404, detail="User not found")
-    
+    user_doc.pop("password_hash", None)
+
     return User(**user_doc)
 
 @app.on_event("startup")
@@ -270,58 +273,69 @@ async def startup():
         if not club_info:
             await db.club_info.insert_one(ClubInfo().model_dump())
             logger.info("Club info initialized")
+
+        await seed_admin()
     except Exception as e:
         logger.error(f"Startup error: {e}")
 
-@api_router.post("/auth/session")
-async def create_session(session_id: str = Header(None, alias="X-Session-ID")):
-    if not session_id:
-        raise HTTPException(status_code=400, detail="X-Session-ID header required")
-    
+def _hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def _verify_password(plain: str, hashed: str) -> bool:
     try:
-        resp = requests.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id},
-            timeout=10
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as e:
-        logger.error(f"Session exchange failed: {e}")
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user_id = f"user_{uuid.uuid4().hex[:12]}"
-    existing_user = await db.users.find_one({"email": data["email"]}, {"_id": 0})
-    
-    if existing_user:
-        user_id = existing_user["user_id"]
-        await db.users.update_one(
-            {"user_id": user_id},
-            {"$set": {"name": data["name"], "picture": data.get("picture", "")}}
-        )
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception:
+        return False
+
+async def seed_admin():
+    admin_email = os.environ.get("ADMIN_EMAIL", "").lower().strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    if not admin_email or not admin_password:
+        logger.warning("ADMIN_EMAIL / ADMIN_PASSWORD not set; skipping seed")
+        return
+    existing = await db.users.find_one({"email": admin_email}, {"_id": 0})
+    hashed = _hash_password(admin_password)
+    if existing is None:
+        user = {
+            "user_id": f"user_{uuid.uuid4().hex[:12]}",
+            "email": admin_email,
+            "name": "Admin",
+            "picture": "",
+            "role": "admin",
+            "password_hash": hashed,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.users.insert_one(user)
+        logger.info(f"Admin seeded: {admin_email}")
     else:
-        user = User(
-            user_id=user_id,
-            email=data["email"],
-            name=data["name"],
-            picture=data.get("picture", ""),
-            role="admin",
-            created_at=datetime.now(timezone.utc).isoformat()
-        )
-        await db.users.insert_one(user.model_dump())
-    
-    session_token = data["session_token"]
+        # Always sync the .env password so ops can rotate it
+        await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hashed, "role": "admin"}})
+        logger.info(f"Admin password synced: {admin_email}")
+
+class LoginPayload(BaseModel):
+    email: str
+    password: str
+
+@api_router.post("/auth/login")
+async def login(payload: LoginPayload):
+    email = payload.email.lower().strip()
+    user_doc = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user_doc or not user_doc.get("password_hash"):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    if not _verify_password(payload.password, user_doc["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    session_token = secrets.token_urlsafe(48)
     expires_at = datetime.now(timezone.utc) + timedelta(days=7)
-    
     session = UserSession(
-        user_id=user_id,
+        user_id=user_doc["user_id"],
         session_token=session_token,
         expires_at=expires_at.isoformat(),
         created_at=datetime.now(timezone.utc).isoformat()
     )
     await db.user_sessions.insert_one(session.model_dump())
-    
-    user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+
+    user_doc.pop("password_hash", None)
     return {"session_token": session_token, "user": user_doc}
 
 @api_router.get("/auth/me")

@@ -1,0 +1,43 @@
+{
+  "summary": "Verified bug-fix round: email/password JWT-style admin login, navbar cleanup (About/Council removed), Performance Booking smooth-scroll, and public/protected API endpoints. 19/19 backend tests pass, 9/10 frontend checks pass (1 minor: URL hash '#booking' not appended when already on '/'). All critical acceptance criteria met.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Performance Booking nav click on '/'",
+        "issue": "Smooth scroll works and no page reload occurs (scrollY=1136), but URL is NOT updated to include '#booking' when already on home. scrollToBooking calls e.preventDefault() and manually scrolls without pushing '#booking' to history. When navigating from /join-us the hash IS present. Minor UX inconsistency — not blocking.",
+        "affected_selectors": ["[data-testid=\"nav-link-booking\"]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_and_public.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL: In Navbar.scrollToBooking, after smooth-scroll on '/', also call window.history.replaceState(null, '', '/#booking') so URL matches spec ('URL updates to include #booking').",
+    "OPTIONAL: The public home page triggers one GET /api/auth/me → 401 in the console (likely from ProtectedRoute or an early auth check on public routes). Not user-visible but noisy — consider suppressing 401 log or gating the call to admin routes only."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 746 lines — approaching threshold; consider splitting into routers (auth, gallery, admin, public) for maintainability.",
+    "seed_admin() rewrites bcrypt hash on every startup — safe, but produces new hash each time (bcrypt gensalt) which is fine. Good.",
+    "CORS uses allow_credentials=True with allow_origins='*' fallback — for production, ensure CORS_ORIGINS env var is set to explicit origins (browser will reject credentials with wildcard).",
+    "AdminLogin uses samesite=none;secure cookie — correct for cross-site preview URL. Cookie is currently only used as UI marker; actual auth is via Authorization Bearer header stored/read from cookie by axios elsewhere (verify all admin pages read session_token from document.cookie).",
+    "GET /api/auth/me is called on public pages too (produces 401 in console) — restrict to admin routes."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_and_public.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "90%"},
+  "test_credentials": "ding.jiae@gmail.com / Utem24Drum! (from /app/memory/test_credentials.md) — verified working",
+  "seed_data_creation": "None — used seeded admin only",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend regression suite at /app/backend/tests/test_auth_and_public.py (pytest, 19 tests, all passing). Auth is now email+password → session_token via POST /api/auth/login. Cookie 'session_token' is set client-side (samesite=none;secure). All admin endpoints use Authorization: Bearer <token> header. Public nav has only Home, Performance Booking, Join Us + lang switcher. Routes /about and /team have been removed from public App.js; /admin/team still exists (intentional).",
+  "rca of the issue": "N/A — no critical bugs found. Minor URL-hash inconsistency described above."
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ const API = `${BACKEND_URL}/api`;
 const Navbar = () => {
   const { language, toggleLanguage, t } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [logoPath, setLogoPath] = useState('');
   const isAdmin = location.pathname.startsWith('/admin');
@@ -22,11 +23,20 @@ const Navbar = () => {
 
   if (isAdmin) return null;
 
+  const scrollToBooking = (e) => {
+    e.preventDefault();
+    setIsOpen(false);
+    if (location.pathname === '/') {
+      const el = document.getElementById('booking');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      navigate('/#booking');
+    }
+  };
+
   const navLinks = [
     { to: '/', label: t('Home', '首页') },
-    { to: '/about', label: t('About', '关于') },
-    { to: '/#booking', label: t('Performance Booking', '表演邀约'), hash: true },
-    { to: '/team', label: t('Council', '理事会') },
+    { to: '/#booking', label: t('Performance Booking', '表演邀约'), hash: true, onClick: scrollToBooking },
     { to: '/join-us', label: t('Join Us', '加入我们') },
   ];
 
@@ -58,8 +68,9 @@ const Navbar = () => {
                 <a
                   key={link.to}
                   href={link.to}
+                  onClick={link.onClick}
                   className="hover:text-[#D4AF37] transition-colors"
-                  data-testid={`nav-link-booking`}
+                  data-testid="nav-link-booking"
                 >
                   {link.label}
                 </a>
@@ -103,9 +114,9 @@ const Navbar = () => {
                 <a
                   key={link.to}
                   href={link.to}
+                  onClick={link.onClick}
                   className="block py-2 hover:text-[#D4AF37] transition-colors"
-                  onClick={() => setIsOpen(false)}
-                  data-testid={`mobile-nav-link-booking`}
+                  data-testid="mobile-nav-link-booking"
                 >
                   {link.label}
                 </a>

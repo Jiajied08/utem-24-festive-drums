@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus, Instagram } from 'lucide-react';
+import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus, Instagram, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 

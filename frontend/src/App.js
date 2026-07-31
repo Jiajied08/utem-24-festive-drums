@@ -7,9 +7,7 @@ import Footer from '@/components/Footer';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AuthCallback from '@/components/AuthCallback';
 import Home from '@/pages/Home';
-import About from '@/pages/About';
 import History from '@/pages/History';
-import Team from '@/pages/Team';
 import JoinUs from '@/pages/JoinUs';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -34,9 +32,7 @@ function AppContent() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/history" element={<History />} />
-        <Route path="/team" element={<Team />} />
         <Route path="/join-us" element={<JoinUs />} />
         <Route path="/contact" element={<JoinUs />} />
         <Route path="/admin/login" element={<AdminLogin />} />

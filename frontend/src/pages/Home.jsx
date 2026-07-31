@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Instagram } from 'lucide-react';
@@ -12,6 +12,7 @@ const API = `${BACKEND_URL}/api`;
 
 const Home = () => {
   const { t } = useLanguage();
+  const location = useLocation();
   const [clubInfo, setClubInfo] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [instagramPosts, setInstagramPosts] = useState([]);
@@ -36,6 +37,16 @@ const Home = () => {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (location.hash === '#booking') {
+      const timer = setTimeout(() => {
+        const el = document.getElementById('booking');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.hash]);
 
   const currentYear = new Date().getFullYear();
   const yearsOfExperience = clubInfo ? currentYear - clubInfo.established_year : 0;
@@ -82,16 +93,6 @@ const Home = () => {
                   {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
                 </Button>
               </a>
-              <Link to="/about">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="btn-secondary px-8 py-6 text-lg rounded-sm"
-                  data-testid="hero-cta-discover"
-                >
-                  {t('Discover Our Story', '发现我们的故事')}
-                </Button>
-              </Link>
             </div>
           </motion.div>
         </div>
@@ -116,11 +117,6 @@ const Home = () => {
             <p className="text-lg leading-relaxed text-gray-600 mb-8">
               {clubInfo && t(clubInfo.about_en || 'The UTeM 24 Festive Drum Club brings together traditional 24 Festive Drums culture, teamwork, discipline and youthful energy. We are dedicated to preserving this unique art form while developing leadership and friendship among our members.', clubInfo.about_zh || 'UTeM 24节令鼓俱乐部将传统的 24 节令鼓文化、团队合作、纪律和青春活力结合在一起。我们致力于保护这种独特的艺术形式，同时培养成员之间的领导力和友谊。')}
             </p>
-            <Link to="/about">
-              <Button className="btn-primary px-6 py-3" data-testid="intro-learn-more">
-                {t('Learn More', '了解更多')}
-              </Button>
-            </Link>
           </motion.div>
         </div>
       </section>
