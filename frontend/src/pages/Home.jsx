@@ -151,16 +151,17 @@ const Home = () => {
         </section>
       )}
 
-      <section id="booking" className="py-24 md:py-32 bg-white" data-testid="booking-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="booking" className="py-24 md:py-32 bg-[#410C09] text-white relative overflow-hidden" data-testid="booking-section">
+        <div className="absolute inset-0 texture-overlay pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
               {t('Performance Booking', '演出预订')}
             </p>
-            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight text-[#410C09] mb-4">
+            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight text-white mb-4">
               {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-200 max-w-2xl mx-auto">
               {t(
                 'From opening ceremonies to major festivals — book UTeM 24FD to bring authentic 24 Festive Drums energy to your event.',
                 '从开幕仪式到大型节庆 — 邀请 UTeM 廿四节令鼓队为您的活动带来正宗的鼓声魅力。'
@@ -179,14 +180,14 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-[#F5F1E7] p-8 rounded-sm border border-transparent hover:border-[#D4AF37] transition-colors"
+                className="bg-white/5 backdrop-blur-sm p-8 rounded-sm border border-white/10 hover:border-[#D4AF37] transition-colors"
                 data-testid={`booking-tier-${idx}`}
               >
                 <div className="text-4xl mb-4">{pkg.icon}</div>
-                <h3 className="font-heading text-2xl font-bold text-[#410C09] mb-2">
+                <h3 className="font-heading text-2xl font-bold text-[#D4AF37] mb-2">
                   {t(pkg.title_en, pkg.title_zh)}
                 </h3>
-                <p className="text-gray-700">{t(pkg.desc_en, pkg.desc_zh)}</p>
+                <p className="text-gray-200">{t(pkg.desc_en, pkg.desc_zh)}</p>
               </motion.div>
             ))}
           </div>
@@ -202,7 +203,7 @@ const Home = () => {
                 {t('WhatsApp Us to Book', 'WhatsApp 联系预订')}
               </Button>
             </a>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-300 mt-4">
               {t(
                 'Final quotation depends on location, duration, performers, transport, equipment and event schedule.',
                 '最终报价视地点、时长、人数、交通、设备及活动时间表而定。'

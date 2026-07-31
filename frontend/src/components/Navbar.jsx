@@ -29,6 +29,7 @@ const Navbar = () => {
     if (location.pathname === '/') {
       const el = document.getElementById('booking');
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.replaceState(null, '', '/#booking');
     } else {
       navigate('/#booking');
     }
