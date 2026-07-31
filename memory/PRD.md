@@ -82,6 +82,14 @@ Main purposes:
 - ✅ Removed /history route (single history source now on /about)
 - ✅ Iteration 6 testing: 100% backend + 100% frontend pass
 
+## Session Updates (2026-02-01 — Continued)
+- ✅ New `EventPoster` model + `/api/posters` GET (with ?upcoming filter) / POST (multipart) / DELETE
+- ✅ New `/admin/posters` admin page — drag & drop poster upload, date/location/link/EN/中文 title, delete
+- ✅ Homepage "Upcoming Shows / 即将登场" section auto-renders future-dated posters with month/day badge, title, location, optional clickable link
+- ✅ Council Yearbook redesign of /team — session tabs + prev/next arrows + AnimatePresence flip transitions between sessions
+- ✅ Timezone-safe date parsing on poster badges (YYYY-MM-DD split, no UTC drift)
+- ✅ Iteration 7 testing: 100% backend (9/9) + 100% frontend pass
+
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
 - **Frontend Pages**: ✅ All marketing routes load with content

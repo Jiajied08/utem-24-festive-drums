@@ -147,11 +147,15 @@ const Home = () => {
 
             <div className={`grid gap-6 ${posters.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : posters.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
               {posters.map((p, i) => {
-                const dateObj = p.event_date ? new Date(p.event_date) : null;
-                const day = dateObj ? dateObj.getDate() : '';
-                const month = dateObj
-                  ? dateObj.toLocaleString(undefined, { month: 'short' }).toUpperCase()
-                  : '';
+                let day = '';
+                let month = '';
+                if (p.event_date) {
+                  const [y, m, d] = p.event_date.split('-').map((n) => parseInt(n, 10));
+                  const dateObj = new Date(y, (m || 1) - 1, d || 1);
+                  day = dateObj.getDate();
+                  month = dateObj.toLocaleString(undefined, { month: 'short' }).toUpperCase();
+                }
+                const hasDate = !!p.event_date;
                 const cardBody = (
                   <>
                     <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
@@ -162,7 +166,7 @@ const Home = () => {
                         loading="lazy"
                       />
                     </div>
-                    {dateObj && (
+                    {hasDate && (
                       <div className="absolute top-3 left-3 bg-[#410C09] text-white rounded-sm px-3 py-2 text-center shadow-lg" data-testid={`poster-date-${i}`}>
                         <div className="text-xs font-semibold text-[#D4AF37] leading-none">{month}</div>
                         <div className="font-heading text-2xl leading-none mt-1">{day}</div>
