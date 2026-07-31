@@ -1,34 +1,92 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+.App {
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.texture-overlay {
+  background-image: url('https://images.unsplash.com/photo-1601662528567-526cd06f6582?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMHBhcGVyJTIwdGV4dHVyZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzgyNjc0MzExfDA&ixlib=rb-4.1.0&q=85');
+  background-size: cover;
+  mix-blend-mode: multiply;
+  opacity: 0.05;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.hero-overlay {
+  background: linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(65, 12, 9, 0.5) 50%, transparent 100%);
 }
 
-.App-link {
-    color: #61dafb;
+.gallery-item {
+  transition: transform 0.3s ease;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.admin-sidebar {
+  background: #FAFAFA;
+  border-right: 1px solid #E5E5E5;
+}
+
+.btn-primary {
+  background: #D4AF37;
+  color: #0A0A0A;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #F0C84B;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+  border: 1px solid #D4AF37;
+  color: #D4AF37;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  transition: background-color 0.3s ease;
+}
+
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
 }

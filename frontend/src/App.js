@@ -1,55 +1,64 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import '@/App.css';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { LanguageProvider } from '@/contexts/LanguageContext';
+import { Toaster } from '@/components/ui/sonner';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import AuthCallback from '@/components/AuthCallback';
+import Home from '@/pages/Home';
+import About from '@/pages/About';
+import History from '@/pages/History';
+import Performances from '@/pages/Performances';
+import Packages from '@/pages/Packages';
+import Team from '@/pages/Team';
+import Contact from '@/pages/Contact';
+import AdminLogin from '@/pages/admin/AdminLogin';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+function AppContent() {
+  const location = useLocation();
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/performances" element={<Performances />} />
+        <Route path="/packages" element={<Packages />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+      <Footer />
+    </>
   );
-};
+}
 
 function App() {
   return (
-    <div className="App">
+    <LanguageProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <div className="App">
+          <AppContent />
+          <Toaster position="top-right" />
+        </div>
       </BrowserRouter>
-    </div>
+    </LanguageProvider>
   );
 }
 
