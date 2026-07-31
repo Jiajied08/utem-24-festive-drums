@@ -97,6 +97,17 @@ Main purposes:
 - ✅ Public /team yearbook cards flip on click ("Read farewell / 阅读毕业寄语") to reveal the note on a maroon back-side with gold quote mark; click "Back to photo" to flip back
 - ✅ Backend curl verified: PATCH updates, 401 without auth, 404 for unknown id
 
+## Session Updates (2026-02-01 — RBAC + Master Admin)
+- ✅ `User.role` now `"master"` or `"admin"` — seed_admin promotes first .env admin to master
+- ✅ New `POST /api/auth/change-password` (any admin, min 8 chars, invalidates other sessions)
+- ✅ New master-only endpoints: `GET /api/admins`, `POST /api/admins`, `DELETE /api/admins/{id}`, `POST /api/admins/{id}/transfer-master`
+- ✅ Guard rails: master can't delete self, can't delete another master; transfer requires re-entering current master password
+- ✅ New `/admin/account` (all admins) — self-service password change with confirmation + role badge
+- ✅ New `/admin/users` (master only) — list, add, delete admins + transfer master flow with confirmation dialog
+- ✅ Sidebar: "My Account" always visible; "Admin Users" (Crown icon + Master badge) only for master
+- ✅ Sidebar scroll fix — nav now `flex-1 overflow-y-auto` so all items stay reachable at short heights
+- ✅ Iteration 9 testing: 100% backend (22/22 test_rbac.py) + 100% frontend pass
+
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
 - **Frontend Pages**: ✅ All marketing routes load with content
