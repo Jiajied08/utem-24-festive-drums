@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Instagram, Facebook, MapPin, Mail, Phone } from 'lucide-react';
+import { Instagram, Facebook, Youtube, MapPin, Mail, Phone } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -82,13 +82,24 @@ const Footer = () => {
               )}
               {settings?.facebook && (
                 <a
-                  href={`https://facebook.com/${settings.facebook}`}
+                  href={`https://www.facebook.com/${settings.facebook}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#D4AF37] transition-colors"
                   data-testid="footer-facebook-link"
                 >
                   <Facebook size={24} />
+                </a>
+              )}
+              {settings?.youtube && (
+                <a
+                  href={`https://www.youtube.com/channel/${settings.youtube}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#D4AF37] transition-colors"
+                  data-testid="footer-youtube-link"
+                >
+                  <Youtube size={24} />
                 </a>
               )}
             </div>

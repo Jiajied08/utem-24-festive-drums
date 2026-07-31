@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Users, Award, Calendar } from 'lucide-react';
+import { Users, Award, Calendar, Instagram } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -13,16 +13,22 @@ const Home = () => {
   const { t } = useLanguage();
   const [clubInfo, setClubInfo] = useState(null);
   const [gallery, setGallery] = useState([]);
+  const [instagramPosts, setInstagramPosts] = useState([]);
+  const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [infoRes, galleryRes] = await Promise.all([
+        const [infoRes, galleryRes, igRes, settingsRes] = await Promise.all([
           axios.get(`${API}/club-info`),
-          axios.get(`${API}/gallery`)
+          axios.get(`${API}/gallery`),
+          axios.get(`${API}/instagram-posts`),
+          axios.get(`${API}/settings`)
         ]);
         setClubInfo(infoRes.data);
         setGallery(galleryRes.data.slice(0, 6));
+        setInstagramPosts(igRes.data);
+        setSettings(settingsRes.data);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
@@ -39,7 +45,7 @@ const Home = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85')`
+            backgroundImage: `url('https://www.instagram.com/p/DXV5kFakuhT/media/?size=l'), url('https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85')`
           }}
         />
         <div className="absolute inset-0 hero-overlay" />
@@ -62,8 +68,8 @@ const Home = () => {
           </h2>
           <p className="text-lg md:text-xl leading-relaxed mb-8 text-gray-200" data-testid="hero-tagline">
             {t(
-              'Tradition in Every Beat. Unity in Every Performance.',
-              '每一个节拍都有传统，每一场演出都有团结。'
+              'Twenty-four solar terms, carried forward through the beat of drums. More than a performance — a continuation of culture.',
+              '廿四节气，化为鼓声传承。🥁 不只是表演，是文化的延续。'
             )}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -73,7 +79,7 @@ const Home = () => {
                 className="btn-primary px-8 py-6 text-lg rounded-sm"
                 data-testid="hero-cta-invite"
               >
-                {t('Invite Us to Perform', '邀请我们演出')}
+                {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
               </Button>
             </Link>
             <Link to="/about">
@@ -148,8 +154,8 @@ const Home = () => {
             </p>
             <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight mb-6 text-[#0A0A0A]">
               {t(
-                'Preserving the Art of 24 Festive Drums',
-                '保护 24 节令鼓艺术'
+                'Established in 2011 at UTeM',
+                '创立于2011年于UTeM'
               )}
             </h2>
             <p className="text-lg leading-relaxed text-gray-600 mb-8">
@@ -201,6 +207,55 @@ const Home = () => {
         </section>
       )}
 
+      {instagramPosts.length > 0 && (
+        <section className="py-20 bg-[#F5F1E7]" data-testid="instagram-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+                {t('Follow the Beat', '关注鼓声')}
+              </p>
+              <h2 className="font-heading text-3xl md:text-4xl text-[#410C09] mb-4">
+                {t('Latest from Instagram', 'Instagram 最新动态')}
+              </h2>
+              {settings?.instagram && (
+                <a
+                  href={`https://instagram.com/${settings.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[#410C09] hover:text-[#D4AF37] transition-colors"
+                  data-testid="instagram-profile-link"
+                >
+                  <Instagram size={20} />
+                  <span className="font-semibold">@{settings.instagram}</span>
+                </a>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {instagramPosts.slice(0, 6).map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  data-testid={`instagram-post-${index}`}
+                >
+                  <iframe
+                    src={`https://www.instagram.com/p/${post.shortcode}/embed/`}
+                    className="w-full"
+                    style={{ height: '500px', border: 0 }}
+                    loading="lazy"
+                    scrolling="no"
+                    allowtransparency="true"
+                    title={`Instagram post ${post.shortcode}`}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-32 bg-[#410C09] text-white" data-testid="cta-section">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -209,7 +264,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl mb-6">
-              {t('Ready to Book a Performance?', '准备好预订表演了吗？')}
+              {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
             </h2>
             <p className="text-lg mb-8 text-gray-200">
               {t(
@@ -217,11 +272,16 @@ const Home = () => {
                 '立即联系我们，讨论您的活动需求并获取定制报价。'
               )}
             </p>
-            <Link to="/packages">
-              <Button size="lg" className="btn-primary px-8 py-6 text-lg" data-testid="cta-packages">
-                {t('View Packages & Pricing', '查看套餐和价格')}
+            <a
+              href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about performance pricing.', '您好！我想咨询演出价格。'))}` : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="cta-packages"
+            >
+              <Button size="lg" className="btn-primary px-8 py-6 text-lg">
+                {t('WhatsApp Us for Pricing', 'Whatsapp我们了解价格')}
               </Button>
-            </Link>
+            </a>
           </motion.div>
         </div>
       </section>

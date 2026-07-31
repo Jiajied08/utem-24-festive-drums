@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus } from 'lucide-react';
+import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 
@@ -35,6 +35,7 @@ const AdminLayout = ({ children, user }) => {
     { path: '/admin/club-info', label: 'Club Info', icon: FileText },
     { path: '/admin/history', label: 'History', icon: FileText },
     { path: '/admin/gallery', label: 'Gallery', icon: Image },
+    { path: '/admin/instagram', label: 'Instagram Feed', icon: Instagram },
     { path: '/admin/packages', label: 'Packages', icon: Package },
     { path: '/admin/enquiries', label: 'Enquiries', icon: MessageSquare },
     { path: '/admin/achievements', label: 'Achievements', icon: Trophy },

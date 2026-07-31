@@ -183,10 +183,11 @@ class SiteSettings(BaseModel):
     whatsapp_vice: str = "0162530179"
     email: str = "[Email]"
     instagram: str = "utem24fd_official"
-    facebook: str = ""
+    facebook: str = "utem24festivedrums"
     tiktok: str = ""
-    address_en: str = "Universiti Teknikal Malaysia Melaka"
-    address_zh: str = "马来西亚技术大学"
+    youtube: str = "UCfhI7K13yEpZgO7cIQ6kPoA"
+    address_en: str = "Universiti Teknikal Malaysia Melaka, Jalan Hang Tuah Jaya, 76100 Durian Tunggal, Malacca"
+    address_zh: str = "马来西亚技术大学，Jalan Hang Tuah Jaya，76100 Durian Tunggal，马六甲"
 
 class JoinUsSubmission(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -200,6 +201,21 @@ class JoinUsSubmission(BaseModel):
     experience: str = ""
     why_join: str = ""
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class InstagramPost(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"ig_{uuid.uuid4().hex[:12]}")
+    post_url: str
+    shortcode: str = ""
+    caption: str = ""
+    order: int = 0
+    is_active: bool = True
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+def extract_instagram_shortcode(url: str) -> Optional[str]:
+    import re
+    match = re.search(r'instagram\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)', url)
+    return match.group(1) if match else None
 
 async def get_user_from_auth(authorization: str = Header(None), auth: str = Query(None)):
     auth_header = authorization or (f"Bearer {auth}" if auth else None)
@@ -577,6 +593,29 @@ async def get_join_us_submissions(authorization: str = Header(None)):
     await get_user_from_auth(authorization=authorization)
     submissions = await db.join_us_submissions.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return submissions
+
+@api_router.get("/instagram-posts")
+async def get_instagram_posts():
+    posts = await db.instagram_posts.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(1000)
+    return posts
+
+@api_router.post("/instagram-posts")
+async def create_instagram_post(post: InstagramPost, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    shortcode = extract_instagram_shortcode(post.post_url)
+    if not shortcode:
+        raise HTTPException(status_code=400, detail="Invalid Instagram URL. Use format: https://www.instagram.com/p/SHORTCODE/")
+    post.shortcode = shortcode
+    await db.instagram_posts.insert_one(post.model_dump())
+    return post
+
+@api_router.delete("/instagram-posts/{post_id}")
+async def delete_instagram_post(post_id: str, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    result = await db.instagram_posts.update_one({"id": post_id}, {"$set": {"is_active": False}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
 
 app.include_router(api_router)
 

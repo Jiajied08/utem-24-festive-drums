@@ -15,6 +15,7 @@ import Team from '@/pages/Team';
 import Contact from '@/pages/Contact';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminInstagram from '@/pages/admin/AdminInstagram';
 
 function AppContent() {
   const location = useLocation();
@@ -40,6 +41,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/instagram"
+          element={
+            <ProtectedRoute>
+              <AdminInstagram />
             </ProtectedRoute>
           }
         />
