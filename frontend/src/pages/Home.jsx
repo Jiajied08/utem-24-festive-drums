@@ -15,20 +15,23 @@ const Home = () => {
   const location = useLocation();
   const [clubInfo, setClubInfo] = useState(null);
   const [gallery, setGallery] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [instagramPosts, setInstagramPosts] = useState([]);
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [infoRes, galleryRes, igRes, settingsRes] = await Promise.all([
+        const [infoRes, galleryRes, videosRes, igRes, settingsRes] = await Promise.all([
           axios.get(`${API}/club-info`),
           axios.get(`${API}/gallery`),
+          axios.get(`${API}/videos`),
           axios.get(`${API}/instagram-posts`),
           axios.get(`${API}/settings`)
         ]);
         setClubInfo(infoRes.data);
         setGallery(galleryRes.data.slice(0, 6));
+        setVideos(videosRes.data);
         setInstagramPosts(igRes.data);
         setSettings(settingsRes.data);
       } catch (error) {
@@ -121,32 +124,74 @@ const Home = () => {
         </div>
       </section>
 
-      {gallery.length > 0 && (
-        <section className="py-20 bg-[#0A0A0A]" data-testid="gallery-preview">
+      {(gallery.length > 0 || videos.length > 0) && (
+        <section className="py-20 md:py-24 bg-[#0A0A0A]" data-testid="previous-performances-section">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl text-white mb-4">
-                {t('Our Performances', '我们的演出')}
+              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+                {t('Previous Performances', '过往演出')}
+              </p>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl text-white mb-4">
+                {t('Moments Worth Reliving', '值得回味的瞬间')}
               </h2>
+              <p className="text-gray-400 max-w-2xl mx-auto">
+                {t(
+                  `A look back at the shows, competitions and stages we've shared.`,
+                  '回顾我们一同经历的演出、比赛与舞台。'
+                )}
+              </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {gallery.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="overflow-hidden rounded-sm aspect-square"
-                  data-testid={`gallery-preview-item-${index}`}
-                >
-                  <img
-                    src={`${API}/files/${item.storage_path}`}
-                    alt={t(item.title_en, item.title_zh)}
-                    className="w-full h-full object-cover gallery-item"
-                  />
-                </motion.div>
-              ))}
-            </div>
+
+            {videos.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10" data-testid="performance-videos">
+                {videos.slice(0, 4).map((v, index) => (
+                  <motion.div
+                    key={v.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="rounded-sm overflow-hidden bg-black"
+                    data-testid={`performance-video-${index}`}
+                  >
+                    <div className="aspect-video">
+                      <iframe
+                        src={v.embed_url}
+                        title={v.title_en || 'Performance video'}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                    {(v.title_en || v.title_zh) && (
+                      <div className="p-3 text-white">
+                        <p className="font-semibold">{t(v.title_en, v.title_zh) || v.title_en}</p>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            {gallery.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4" data-testid="performance-photos">
+                {gallery.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.08 }}
+                    className="overflow-hidden rounded-sm aspect-square"
+                    data-testid={`gallery-preview-item-${index}`}
+                  >
+                    <img
+                      src={`${API}/files/${item.storage_path}`}
+                      alt={t(item.title_en, item.title_zh)}
+                      className="w-full h-full object-cover gallery-item"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

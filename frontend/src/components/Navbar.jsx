@@ -37,9 +37,10 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/', label: t('Home', '首页') },
+    { to: '/about', label: t('About', '关于') },
     { to: '/#booking', label: t('Performance Booking', '表演邀约'), hash: true, onClick: scrollToBooking },
     { to: '/team', label: t('Council', '理事会') },
-    { to: '/join-us', label: t('Join Us', '加入我们') },
+    { to: '/join-us', label: t('Become a Drummer', '成为鼓手') },
   ];
 
   return (
@@ -60,7 +61,7 @@ const Navbar = () => {
               </div>
             )}
             <span className="font-heading text-xl font-bold">
-              {t('UTeM 24FD', 'UTeM 24FD')}
+              {t('UTeM 24FD', '技大二十四节令鼓队')}
             </span>
           </Link>
 

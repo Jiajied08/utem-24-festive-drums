@@ -227,6 +227,31 @@ class HeroImage(BaseModel):
     is_active: bool = True
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+class PerformanceVideo(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"vid_{uuid.uuid4().hex[:12]}")
+    video_url: str
+    embed_url: str = ""
+    title_en: str = ""
+    title_zh: str = ""
+    order: int = 0
+    is_active: bool = True
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+def build_video_embed(url: str) -> Optional[str]:
+    import re
+    if not url:
+        return None
+    # YouTube long / short / shorts
+    m = re.search(r'(?:youtube\.com/(?:watch\?v=|embed/|shorts/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})', url)
+    if m:
+        return f"https://www.youtube.com/embed/{m.group(1)}"
+    # Vimeo
+    m = re.search(r'vimeo\.com/(?:video/)?(\d+)', url)
+    if m:
+        return f"https://player.vimeo.com/video/{m.group(1)}"
+    return None
+
 def extract_instagram_shortcode(url: str) -> Optional[str]:
     import re
     match = re.search(r'instagram\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)', url)
@@ -727,6 +752,41 @@ async def upload_hero_image(
 async def delete_hero_image(image_id: str, authorization: str = Header(None)):
     await get_user_from_auth(authorization=authorization)
     result = await db.hero_images.update_one({"id": image_id}, {"$set": {"is_active": False}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
+
+class VideoCreatePayload(BaseModel):
+    video_url: str
+    title_en: str = ""
+    title_zh: str = ""
+    order: int = 0
+
+@api_router.get("/videos")
+async def get_videos():
+    items = await db.performance_videos.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(1000)
+    return items
+
+@api_router.post("/videos")
+async def create_video(payload: VideoCreatePayload, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    embed = build_video_embed(payload.video_url)
+    if not embed:
+        raise HTTPException(status_code=400, detail="Unsupported video URL. Please paste a YouTube or Vimeo link.")
+    item = PerformanceVideo(
+        video_url=payload.video_url,
+        embed_url=embed,
+        title_en=payload.title_en,
+        title_zh=payload.title_zh,
+        order=payload.order,
+    )
+    await db.performance_videos.insert_one(item.model_dump())
+    return item
+
+@api_router.delete("/videos/{video_id}")
+async def delete_video(video_id: str, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    result = await db.performance_videos.update_one({"id": video_id}, {"$set": {"is_active": False}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Not found")
     return {"message": "Deleted"}

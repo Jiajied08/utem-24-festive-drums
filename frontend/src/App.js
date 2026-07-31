@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AuthCallback from '@/components/AuthCallback';
 import Home from '@/pages/Home';
-import History from '@/pages/History';
+import About from '@/pages/About';
 import Team from '@/pages/Team';
 import JoinUs from '@/pages/JoinUs';
 import AdminLogin from '@/pages/admin/AdminLogin';
@@ -21,6 +21,7 @@ import AdminHistory from '@/pages/admin/AdminHistory';
 import AdminAchievements from '@/pages/admin/AdminAchievements';
 import AdminTeam from '@/pages/admin/AdminTeam';
 import AdminHeroImages from '@/pages/admin/AdminHeroImages';
+import AdminVideos from '@/pages/admin/AdminVideos';
 
 function AppContent() {
   const location = useLocation();
@@ -34,7 +35,7 @@ function AppContent() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/history" element={<History />} />
+        <Route path="/about" element={<About />} />
         <Route path="/team" element={<Team />} />
         <Route path="/join-us" element={<JoinUs />} />
         <Route path="/contact" element={<JoinUs />} />
@@ -116,6 +117,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminHeroImages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/videos"
+          element={
+            <ProtectedRoute>
+              <AdminVideos />
             </ProtectedRoute>
           }
         />
