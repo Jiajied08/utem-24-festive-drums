@@ -1,0 +1,23 @@
+{
+  "summary": "Iteration 8 full-stack testing of the Alumni Wall / Farewell feature on TeamMember. Backend: 6/6 pytest cases pass in /app/backend/tests/test_team_farewell.py — PATCH /api/team/{id}/farewell returns 401 without auth, 404 for unknown id, 200 + updated doc (both farewell_en & farewell_zh) with a valid token; POST /api/team accepts farewell_en/farewell_zh multipart form fields and persists them (verified via GET /api/team); the created member is also cleanable via DELETE. GET /api/team returns members including farewell_en/farewell_zh for members that have them set (mem_captain verified). Frontend: Public /team yearbook shows farewell-open-mem_captain button (captain has farewell), no button on mem_vice (no farewell). Clicking flips the card and reveals farewell-back-mem_captain with the italic quote; farewell-close returns to the photo side. Language toggle updates the button text to '阅读毕业寄语'. Admin /admin/team: login as ding.jiae@gmail.com works, admin-team-page loads, farewell-btn-mem_captain shows 'Edit Farewell' with a 2-line italic member-farewell-preview-mem_captain; farewell-btn-mem_vice shows 'Add Farewell' with NO preview. Clicking opens farewell-dialog pre-filled with current en/zh values; edits + save-farewell-btn PATCH the API, show a 'Farewell note saved' toast, close the dialog, and the preview updates after reload. Add-member dialog (member-dialog) has input-farewell-en and input-farewell-zh textareas. Captain's farewell was restored to the original text at the end. Regression: admin login OK, navbar unchanged, homepage renders; upcoming-shows-section is absent because the DB no longer has any active upcoming poster (all posters have been deleted between iterations — not a bug, section only renders when upcoming>0 per spec).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_team_farewell.py",
+    "/app/test_reports/pytest/iter8_farewell.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py GET /api/team returns raw Mongo docs; pre-existing seeded members inserted before the farewell_en/zh fields existed will not expose those keys in the response. Frontend handles this via `m.farewell_en || m.farewell_zh` truthiness so it's non-blocking, but a defensive `.get('farewell_en','')` normalization (or a $set migration on startup) would keep the response schema consistent.",
+    "server.py is now ~884 lines and continues to grow — the recommendation from iter 7 to split into per-resource routers (team, posters, videos, etc.) still stands.",
+    "AdminTeam.jsx: farewellForm state is not reset when the dialog closes without saving, so if a user opens Edit Farewell for member A, changes text, cancels, then opens for member B, the stale text could momentarily show before the effect runs. Minor UX polish, not a functional bug."
+  ],
+  "updated_files": ["/app/backend/tests/test_team_farewell.py"],
+  "success_rate": {"backend": "100% (6/6 test_team_farewell.py)", "frontend": "100% (all farewell + admin + regression checks pass)"},
+  "test_credentials": "ding.jiae@gmail.com / Utem24Drum! (verified working)",
+  "seed_data_creation": "Test POST /api/team created a TEST_FAREWELL_MEMBER and cleanup deleted it. Playwright temporarily overwrote mem_captain's farewell and restored it to the original English/Chinese text at the end.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Alumni Wall / Farewell feature works end-to-end. mem_captain has farewell set (English + Chinese) and mem_vice has none — good for demoing both card states. All posters have been removed from DB (Test Poster from iter 7 no longer present); the homepage upcoming-shows-section thus does not render, which is correct behaviour but means that particular regression path can no longer be visually verified without re-seeding a poster.",
+  "rca of the issue": "N/A — no issues found."
+}

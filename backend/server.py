@@ -175,6 +175,8 @@ class TeamMember(BaseModel):
     session: str
     bio_en: str = ""
     bio_zh: str = ""
+    farewell_en: str = ""
+    farewell_zh: str = ""
     image_path: Optional[str] = None
     order: int = 0
     is_active: bool = True
@@ -640,6 +642,8 @@ async def create_team_member(
     session: str = Form(...),
     bio_en: str = Form(""),
     bio_zh: str = Form(""),
+    farewell_en: str = Form(""),
+    farewell_zh: str = Form(""),
     order: int = Form(0),
     file: Optional[UploadFile] = File(None),
     authorization: str = Header(None)
@@ -662,11 +666,29 @@ async def create_team_member(
         session=session,
         bio_en=bio_en,
         bio_zh=bio_zh,
+        farewell_en=farewell_en,
+        farewell_zh=farewell_zh,
         order=order,
         image_path=image_path
     )
     await db.team_members.insert_one(member.model_dump())
     return member
+
+class FarewellPayload(BaseModel):
+    farewell_en: str = ""
+    farewell_zh: str = ""
+
+@api_router.patch("/team/{member_id}/farewell")
+async def update_farewell(member_id: str, payload: FarewellPayload, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    result = await db.team_members.update_one(
+        {"id": member_id},
+        {"$set": {"farewell_en": payload.farewell_en, "farewell_zh": payload.farewell_zh}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    doc = await db.team_members.find_one({"id": member_id}, {"_id": 0})
+    return doc
 
 @api_router.delete("/team/{member_id}")
 async def delete_team_member(member_id: str, authorization: str = Header(None)):

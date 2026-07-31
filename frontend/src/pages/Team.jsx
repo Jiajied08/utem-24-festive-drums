@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, User, Quote } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -13,6 +13,7 @@ const Team = () => {
   const [loading, setLoading] = useState(true);
   const [activeIdx, setActiveIdx] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [flipped, setFlipped] = useState({});
 
   useEffect(() => {
     axios.get(`${API}/team`)
@@ -122,37 +123,88 @@ const Team = () => {
                     {activeMembers.length} {t('members', '位成员')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {activeMembers.map((m, idx) => (
-                      <motion.div
-                        key={m.id}
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: idx * 0.05 }}
-                        className="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                        data-testid={`team-member-${m.id}`}
-                      >
-                        <div className="aspect-[3/4] bg-[#F5F1E7] flex items-center justify-center overflow-hidden">
-                          {m.image_path ? (
-                            <img src={`${API}/files/${m.image_path}`} alt={t(m.name_en, m.name_zh)} className="w-full h-full object-cover" />
-                          ) : (
-                            <User size={64} className="text-gray-300" />
-                          )}
-                        </div>
-                        <div className="p-4 text-center">
-                          <h3 className="font-heading text-lg font-bold text-[#410C09]">
-                            {t(m.name_en, m.name_zh)}
-                          </h3>
-                          <p className="text-sm text-[#D4AF37] font-semibold mt-1">
-                            {t(m.position_en, m.position_zh)}
-                          </p>
-                          {(m.bio_en || m.bio_zh) && (
-                            <p className="text-xs text-gray-600 mt-2">
-                              {t(m.bio_en, m.bio_zh)}
-                            </p>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
+                    {activeMembers.map((m, idx) => {
+                      const hasFarewell = !!(m.farewell_en || m.farewell_zh);
+                      const farewellText = t(m.farewell_en, m.farewell_zh) || m.farewell_en || m.farewell_zh;
+                      const isFlipped = !!flipped[m.id];
+                      return (
+                        <motion.div
+                          key={m.id}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: idx * 0.05 }}
+                          className="relative"
+                          style={{ perspective: '1200px' }}
+                          data-testid={`team-member-${m.id}`}
+                        >
+                          <motion.div
+                            className="relative w-full"
+                            style={{ transformStyle: 'preserve-3d' }}
+                            animate={{ rotateY: isFlipped ? 180 : 0 }}
+                            transition={{ duration: 0.6 }}
+                          >
+                            <div
+                              className="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                              style={{ backfaceVisibility: 'hidden' }}
+                            >
+                              <div className="aspect-[3/4] bg-[#F5F1E7] flex items-center justify-center overflow-hidden">
+                                {m.image_path ? (
+                                  <img src={`${API}/files/${m.image_path}`} alt={t(m.name_en, m.name_zh)} className="w-full h-full object-cover" />
+                                ) : (
+                                  <User size={64} className="text-gray-300" />
+                                )}
+                              </div>
+                              <div className="p-4 text-center">
+                                <h3 className="font-heading text-lg font-bold text-[#410C09]">
+                                  {t(m.name_en, m.name_zh)}
+                                </h3>
+                                <p className="text-sm text-[#D4AF37] font-semibold mt-1">
+                                  {t(m.position_en, m.position_zh)}
+                                </p>
+                                {(m.bio_en || m.bio_zh) && (
+                                  <p className="text-xs text-gray-600 mt-2">
+                                    {t(m.bio_en, m.bio_zh)}
+                                  </p>
+                                )}
+                                {hasFarewell && (
+                                  <button
+                                    onClick={() => setFlipped((s) => ({ ...s, [m.id]: true }))}
+                                    className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#410C09] hover:text-[#D4AF37] transition-colors"
+                                    data-testid={`farewell-open-${m.id}`}
+                                  >
+                                    <Quote size={12} />
+                                    {t('Read farewell', '阅读毕业寄语')}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {hasFarewell && (
+                              <div
+                                className="absolute inset-0 bg-[#410C09] text-white rounded-sm shadow-md flex flex-col justify-center p-6 text-center"
+                                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                                data-testid={`farewell-back-${m.id}`}
+                              >
+                                <Quote size={24} className="mx-auto mb-3 text-[#D4AF37]" />
+                                <p className="text-sm italic leading-relaxed text-gray-100">
+                                  &ldquo;{farewellText}&rdquo;
+                                </p>
+                                <p className="mt-4 text-xs uppercase tracking-widest text-[#D4AF37] font-semibold">
+                                  — {t(m.name_en, m.name_zh)}
+                                </p>
+                                <button
+                                  onClick={() => setFlipped((s) => ({ ...s, [m.id]: false }))}
+                                  className="mt-4 mx-auto text-xs underline text-gray-300 hover:text-white"
+                                  data-testid={`farewell-close-${m.id}`}
+                                >
+                                  {t('Back to photo', '返回照片')}
+                                </button>
+                              </div>
+                            )}
+                          </motion.div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </motion.div>
               </AnimatePresence>
