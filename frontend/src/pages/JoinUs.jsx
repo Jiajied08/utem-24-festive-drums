@@ -41,80 +41,45 @@ const JoinUs = () => {
 
   return (
     <div className="min-h-screen" data-testid="joinus-page">
-      <section className="relative py-20 md:py-24 bg-[#0A0A0A] text-white" data-testid="joinus-hero">
+      <section className="relative py-16 md:py-24 bg-[#0A0A0A] text-white overflow-hidden" data-testid="joinus-hero">
         <div className="absolute inset-0 texture-overlay" />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
-              {t('Recruitment Now Open', '招新正式开始')}
-            </p>
-            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium mb-4">
-              {t('Feel the Rhythm. Join the Team.', '感受节奏，加入我们')}
-            </h1>
-            <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
-              {t(
-                'The beat has begun… and we are waiting for YOU',
-                '鼓声已响，只差一个你'
-              )}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-12 md:py-16 bg-[#0A0A0A]" data-testid="poster-section">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
-          <img
-            src={`${API}/files/${RECRUITMENT_POSTER}`}
-            alt="UTeM 24 Festive Drums Recruitment 招新"
-            className="max-w-full md:max-w-lg lg:max-w-xl w-auto h-auto object-contain rounded-sm shadow-2xl"
-            data-testid="recruitment-poster"
-          />
-        </div>
-      </section>
-
-      {settings?.whatsapp_group_link && (
-        <section className="py-16 bg-white" data-testid="qr-section">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-br from-[#410C09] to-[#5A110D] rounded-sm p-8 md:p-12 text-white flex flex-col md:flex-row items-center gap-8 md:gap-12">
-              <div className="flex-shrink-0 bg-white p-4 rounded-sm shadow-2xl">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(settings.whatsapp_group_link)}&size=280x280&margin=0&ecc=M`}
-                  alt="WhatsApp Group QR Code"
-                  className="w-64 h-64 md:w-72 md:h-72"
-                  data-testid="whatsapp-qr-code"
-                />
-                <p className="text-center text-[#410C09] font-bold mt-3 text-sm">
-                  🥁 {t('Scan to Join', '扫描加入')}
-                </p>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-3">
-                  {t('Direct Access', '直接加入')}
-                </p>
-                <h2 className="font-heading text-3xl md:text-4xl mb-4">
-                  {t('Scan to Join Our WhatsApp Group', '扫码加入我们的 WhatsApp 群组')}
-                </h2>
-                <p className="text-gray-200 mb-6 leading-relaxed">
-                  {t(
-                    'Skip the form — scan this QR code with your phone camera to join our drummers group chat instantly and start your journey with us.',
-                    '跳过表格 — 用您的手机相机扫描此二维码，立即加入我们的鼓手群聊，开启您的加入之旅。'
-                  )}
-                </p>
-                <a
-                  href={settings.whatsapp_group_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 btn-primary px-6 py-3 rounded-sm"
-                  data-testid="whatsapp-group-link"
-                >
-                  <MessageCircle size={20} />
-                  {t('Open in WhatsApp', '在 WhatsApp 中打开')}
-                </a>
-              </div>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center md:text-left"
+            >
+              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+                {t('Recruitment Now Open', '招新正式开始')}
+              </p>
+              <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium mb-4">
+                {t('Feel the Rhythm. Join the Team.', '感受节奏，加入我们')}
+              </h1>
+              <p className="text-lg md:text-xl text-gray-200">
+                {t(
+                  'The beat has begun… and we are waiting for YOU',
+                  '鼓声已响，只差一个你'
+                )}
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex justify-center md:justify-end"
+            >
+              <img
+                src={`${API}/files/${RECRUITMENT_POSTER}`}
+                alt="UTeM 24 Festive Drums Recruitment 招新"
+                className="max-w-full md:max-w-md w-auto h-auto object-contain rounded-sm shadow-2xl"
+                data-testid="recruitment-poster"
+              />
+            </motion.div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <section className="py-20 bg-[#F5F1E7]" data-testid="marketing-copy">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,12 +136,11 @@ const JoinUs = () => {
       </section>
 
       <section className="py-20 bg-white" data-testid="contact-and-form">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="font-heading text-3xl mb-6 text-[#410C09]">
-                {t('For More Information', '更多资讯')}
-              </h2>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div>
+            <h2 className="font-heading text-3xl md:text-4xl mb-8 text-[#410C09] text-center">
+              {t('For More Information', '更多资讯')}
+            </h2>
               {settings && (
                 <div className="space-y-6">
                   <div className="flex items-start gap-4" data-testid="contact-phone-captain">
@@ -251,56 +215,6 @@ const JoinUs = () => {
                 </div>
               )}
             </div>
-
-            <div className="bg-[#F5F1E7] p-8 rounded-sm" data-testid="join-us-form">
-              <h2 className="font-heading text-3xl mb-6 text-[#410C09]">
-                {t('Register Your Interest', '注册您的兴趣')}
-              </h2>
-              <p className="text-gray-700 mb-6">
-                {t(
-                  'Fill in your details below and we will get in touch to welcome you to the team.',
-                  '填写以下详细信息，我们会尽快联系欢迎您加入我们的队伍。'
-                )}
-              </p>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="name">{t('Full Name', '全名')} *</Label>
-                  <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required data-testid="input-name" />
-                </div>
-                <div>
-                  <Label htmlFor="email">{t('Email', '电子邮件')} *</Label>
-                  <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required data-testid="input-email" />
-                </div>
-                <div>
-                  <Label htmlFor="phone">{t('Phone Number', '电话号码')} *</Label>
-                  <Input id="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required data-testid="input-phone" />
-                </div>
-                <div>
-                  <Label htmlFor="student_id">{t('Student ID', '学生证号')} *</Label>
-                  <Input id="student_id" value={formData.student_id} onChange={(e) => setFormData({ ...formData, student_id: e.target.value })} required data-testid="input-student-id" />
-                </div>
-                <div>
-                  <Label htmlFor="faculty">{t('Faculty', '学院')} *</Label>
-                  <Input id="faculty" value={formData.faculty} onChange={(e) => setFormData({ ...formData, faculty: e.target.value })} required data-testid="input-faculty" />
-                </div>
-                <div>
-                  <Label htmlFor="year">{t('Year of Study', '学习年份')} *</Label>
-                  <Input id="year" value={formData.year} onChange={(e) => setFormData({ ...formData, year: e.target.value })} required data-testid="input-year" />
-                </div>
-                <div>
-                  <Label htmlFor="experience">{t('Previous Drumming Experience', '以前的鼓经验')}</Label>
-                  <Textarea id="experience" value={formData.experience} onChange={(e) => setFormData({ ...formData, experience: e.target.value })} rows={3} data-testid="textarea-experience" />
-                </div>
-                <div>
-                  <Label htmlFor="why_join">{t('Why do you want to join?', '为什么要加入？')}</Label>
-                  <Textarea id="why_join" value={formData.why_join} onChange={(e) => setFormData({ ...formData, why_join: e.target.value })} rows={3} data-testid="textarea-why-join" />
-                </div>
-                <Button type="submit" className="w-full btn-primary" data-testid="submit-join-btn">
-                  {t('Submit Application', '提交申请')}
-                </Button>
-              </form>
-            </div>
-          </div>
         </div>
       </section>
     </div>

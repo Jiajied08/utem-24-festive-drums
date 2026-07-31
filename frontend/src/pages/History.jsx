@@ -69,9 +69,6 @@ const History = () => {
                   <div className="bg-[#F5F1E7] p-6 rounded-sm relative">
                     <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#D4AF37] rounded-full border-4 border-white" />
                     <div className="font-heading text-3xl font-bold text-[#410C09] mb-2">{event.year}</div>
-                    <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-1">
-                      {t('Held', '举办')}
-                    </p>
                     <h3 className="font-bold text-xl mb-2 text-[#0A0A0A]">
                       {t(event.title_en, event.title_zh)}
                     </h3>
