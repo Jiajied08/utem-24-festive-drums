@@ -25,7 +25,7 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: t('Home', '首页') },
     { to: '/about', label: t('About', '关于') },
-    { to: '/history', label: t('History', '历史') },
+    { to: '/#booking', label: t('Performance Booking', '表演邀约'), hash: true },
     { to: '/team', label: t('Council', '理事会') },
     { to: '/join-us', label: t('Join Us', '加入我们') },
   ];
@@ -54,14 +54,25 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="hover:text-[#D4AF37] transition-colors"
-                data-testid={`nav-link-${link.to.slice(1) || 'home'}`}
-              >
-                {link.label}
-              </Link>
+              link.hash ? (
+                <a
+                  key={link.to}
+                  href={link.to}
+                  className="hover:text-[#D4AF37] transition-colors"
+                  data-testid={`nav-link-booking`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="hover:text-[#D4AF37] transition-colors"
+                  data-testid={`nav-link-${link.to.slice(1) || 'home'}`}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
             <Button
               onClick={toggleLanguage}
@@ -88,15 +99,27 @@ const Navbar = () => {
         <div className="md:hidden bg-[#410C09] border-t border-white/10" data-testid="mobile-menu">
           <div className="px-4 py-4 space-y-3">
             {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="block py-2 hover:text-[#D4AF37] transition-colors"
-                onClick={() => setIsOpen(false)}
-                data-testid={`mobile-nav-link-${link.to.slice(1) || 'home'}`}
-              >
-                {link.label}
-              </Link>
+              link.hash ? (
+                <a
+                  key={link.to}
+                  href={link.to}
+                  className="block py-2 hover:text-[#D4AF37] transition-colors"
+                  onClick={() => setIsOpen(false)}
+                  data-testid={`mobile-nav-link-booking`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="block py-2 hover:text-[#D4AF37] transition-colors"
+                  onClick={() => setIsOpen(false)}
+                  data-testid={`mobile-nav-link-${link.to.slice(1) || 'home'}`}
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
             <Button
               onClick={toggleLanguage}

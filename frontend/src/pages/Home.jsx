@@ -41,63 +41,58 @@ const Home = () => {
 
   return (
     <div className="min-h-screen" data-testid="home-page">
-      <section className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden bg-[#0A0A0A]" data-testid="hero-section">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85')`
-          }}
-        />
-        <div className="absolute inset-0 hero-overlay" />
+      <section className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden bg-[#410C09]" data-testid="hero-section">
         <div className="absolute inset-0 texture-overlay" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 text-center text-white px-4 max-w-5xl"
-        >
-          <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4" data-testid="hero-overline">
-            {t('Est. 2011', '建立于 2011')}
-          </p>
-          <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium mb-4" data-testid="hero-title-en">
-            UTeM 24 Festive Drum Club
-          </h1>
-          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight mb-6" data-testid="hero-title-zh">
-            {t('UTeM 二十四节令鼓队', '技大二十四节令鼓队')}
-          </h2>
-          <p className="text-lg md:text-xl leading-relaxed mb-8 text-gray-200" data-testid="hero-tagline">
-            {t(
-              'Twenty-four solar terms, carried forward through the beat of drums. More than a performance — a continuation of culture.',
-              '廿四节气，化为鼓声传承。🥁 不只是表演，是文化的延续。'
-            )}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about booking a performance for my event.', '您好！我想询问有关为我的活动预订演出的事宜。'))}` : '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="hero-cta-invite"
-            >
-              <Button
-                size="lg"
-                className="btn-primary px-8 py-6 text-lg rounded-sm"
+        <div className="relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center text-white"
+          >
+            <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4" data-testid="hero-overline">
+              {t('Est. 2011', '建立于 2011')}
+            </p>
+            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium mb-4" data-testid="hero-title-en">
+              UTeM 24 Festive Drum Club
+            </h1>
+            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight mb-6" data-testid="hero-title-zh">
+              {t('UTeM 二十四节令鼓队', '技大二十四节令鼓队')}
+            </h2>
+            <p className="text-lg md:text-xl leading-relaxed mb-8 text-gray-200 max-w-3xl mx-auto" data-testid="hero-tagline">
+              {t(
+                'Twenty-four solar terms, carried forward through the beat of drums. More than a performance — a continuation of culture.',
+                '廿四节气，化为鼓声传承。🥁 不只是表演，是文化的延续。'
+              )}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about booking a performance for my event.', '您好！我想询问有关为我的活动预订演出的事宜。'))}` : '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="hero-cta-invite"
               >
-                {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
-              </Button>
-            </a>
-            <Link to="/about">
-              <Button
-                size="lg"
-                variant="outline"
-                className="btn-secondary px-8 py-6 text-lg rounded-sm"
-                data-testid="hero-cta-discover"
-              >
-                {t('Discover Our Story', '发现我们的故事')}
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
+                <Button
+                  size="lg"
+                  className="btn-primary px-8 py-6 text-lg rounded-sm"
+                >
+                  {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
+                </Button>
+              </a>
+              <Link to="/about">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="btn-secondary px-8 py-6 text-lg rounded-sm"
+                  data-testid="hero-cta-discover"
+                >
+                  {t('Discover Our Story', '发现我们的故事')}
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       <section className="py-20 bg-[#F5F1E7]" data-testid="stats-section">
@@ -154,7 +149,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
           >
             <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
-              {t('About Us', '关于我们')}
+              {t('UTeM 24FD', '技大24节令鼓')}
             </p>
             <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight mb-6 text-[#0A0A0A]">
               {t(
@@ -204,7 +199,7 @@ const Home = () => {
         </section>
       )}
 
-      <section className="py-24 md:py-32 bg-white" data-testid="booking-section">
+      <section id="booking" className="py-24 md:py-32 bg-white" data-testid="booking-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
