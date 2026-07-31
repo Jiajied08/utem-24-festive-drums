@@ -90,6 +90,13 @@ Main purposes:
 - ✅ Timezone-safe date parsing on poster badges (YYYY-MM-DD split, no UTC drift)
 - ✅ Iteration 7 testing: 100% backend (9/9) + 100% frontend pass
 
+## Session Updates (2026-02-01 — Alumni Wall)
+- ✅ Added `farewell_en` / `farewell_zh` fields to TeamMember model
+- ✅ New endpoint `PATCH /api/team/{id}/farewell` — admins can add or edit a farewell without recreating the member
+- ✅ AdminTeam: farewell fields in the Add-Member dialog + per-card "Add/Edit Farewell" button with dedicated dialog
+- ✅ Public /team yearbook cards flip on click ("Read farewell / 阅读毕业寄语") to reveal the note on a maroon back-side with gold quote mark; click "Back to photo" to flip back
+- ✅ Backend curl verified: PATCH updates, 401 without auth, 404 for unknown id
+
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
 - **Frontend Pages**: ✅ All marketing routes load with content
