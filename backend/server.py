@@ -215,6 +215,16 @@ class InstagramPost(BaseModel):
     is_active: bool = True
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+class HeroImage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"hero_{uuid.uuid4().hex[:12]}")
+    storage_path: str
+    caption_en: str = ""
+    caption_zh: str = ""
+    order: int = 0
+    is_active: bool = True
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 def extract_instagram_shortcode(url: str) -> Optional[str]:
     import re
     match = re.search(r'instagram\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)', url)
@@ -668,6 +678,41 @@ async def create_instagram_post(post: InstagramPost, authorization: str = Header
 async def delete_instagram_post(post_id: str, authorization: str = Header(None)):
     await get_user_from_auth(authorization=authorization)
     result = await db.instagram_posts.update_one({"id": post_id}, {"$set": {"is_active": False}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
+
+@api_router.get("/hero-images")
+async def get_hero_images():
+    items = await db.hero_images.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(1000)
+    return items
+
+@api_router.post("/hero-images")
+async def upload_hero_image(
+    file: UploadFile = File(...),
+    caption_en: str = Form(""),
+    caption_zh: str = Form(""),
+    order: int = Form(0),
+    authorization: str = Header(None)
+):
+    await get_user_from_auth(authorization=authorization)
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    path = f"{APP_NAME}/hero-carousel/{uuid.uuid4()}.{ext}"
+    data = await file.read()
+    result = put_object(path, data, file.content_type or "image/jpeg")
+    item = HeroImage(
+        storage_path=result["path"],
+        caption_en=caption_en,
+        caption_zh=caption_zh,
+        order=order
+    )
+    await db.hero_images.insert_one(item.model_dump())
+    return item
+
+@api_router.delete("/hero-images/{image_id}")
+async def delete_hero_image(image_id: str, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    result = await db.hero_images.update_one({"id": image_id}, {"$set": {"is_active": False}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Not found")
     return {"message": "Deleted"}

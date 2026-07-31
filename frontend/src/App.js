@@ -20,6 +20,7 @@ import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminHistory from '@/pages/admin/AdminHistory';
 import AdminAchievements from '@/pages/admin/AdminAchievements';
 import AdminTeam from '@/pages/admin/AdminTeam';
+import AdminHeroImages from '@/pages/admin/AdminHeroImages';
 
 function AppContent() {
   const location = useLocation();
@@ -100,6 +101,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminTeam />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/hero"
+          element={
+            <ProtectedRoute>
+              <AdminHeroImages />
             </ProtectedRoute>
           }
         />

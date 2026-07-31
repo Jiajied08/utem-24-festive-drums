@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Users, Award, Calendar, Instagram } from 'lucide-react';
+import HeroCarousel from '@/components/HeroCarousel';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -42,6 +43,7 @@ const Home = () => {
   return (
     <div className="min-h-screen" data-testid="home-page">
       <section className="relative py-24 md:py-32 flex items-center justify-center overflow-hidden bg-[#410C09]" data-testid="hero-section">
+        <HeroCarousel />
         <div className="absolute inset-0 texture-overlay" />
 
         <div className="relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8">

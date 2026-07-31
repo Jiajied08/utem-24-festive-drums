@@ -32,6 +32,7 @@ const AdminLayout = ({ children, user }) => {
 
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/admin/hero', label: 'Home Hero', icon: Camera },
     { path: '/admin/club-info', label: 'Club Info', icon: FileText },
     { path: '/admin/history', label: 'History', icon: FileText },
     { path: '/admin/gallery', label: 'Gallery', icon: Image },
