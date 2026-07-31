@@ -1,0 +1,90 @@
+{
+  "theme_strategy": "Hybrid Theme (Dark/Cinematic for Marketing, Light/Clean for Admin Dashboard)",
+  "color_palette": {
+    "primary": "#410C09",
+    "primary_hover": "#5A110D",
+    "secondary_black": "#0A0A0A",
+    "secondary_warm_beige": "#F5F1E7",
+    "secondary_off_white": "#FAFAFA",
+    "accent_muted_gold": "#D4AF37",
+    "accent_muted_gold_hover": "#F0C84B",
+    "text_primary_light": "#FFFFFF",
+    "text_secondary_light": "#D1D1D1",
+    "text_primary_dark": "#0A0A0A",
+    "text_secondary_dark": "#4A4A4A"
+  },
+  "typography": {
+    "fonts": {
+      "headings_en": "'Cormorant Garamond', serif",
+      "headings_zh": "'Noto Serif SC', serif",
+      "body_en": "'Manrope', sans-serif",
+      "body_zh": "'Noto Sans SC', sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-none font-medium",
+      "h2": "text-3xl md:text-4xl lg:text-5xl tracking-tight leading-tight",
+      "h3": "text-2xl md:text-3xl tracking-tight",
+      "body_large": "text-lg md:text-xl leading-relaxed",
+      "body_base": "text-base leading-relaxed",
+      "overline": "text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37]"
+    },
+    "rules": [
+      "Use Cormorant Garamond for all marketing headings to provide a cinematic, elegant, and cultural feel.",
+      "Use Manrope for body text and Admin Dashboard interfaces for extreme legibility.",
+      "Support bilingual rendering by gracefully falling back to Noto Serif SC/Noto Sans SC."
+    ]
+  },
+  "visual_enhancers": {
+    "textures": [
+      "Subtle paper/plaster texture overlay: use a fixed background div with mix-blend-multiply or opacity-5 over maroon/beige backgrounds to simulate traditional drum skins and brush stroke canvas."
+    ],
+    "shadows": [
+      "Marketing: Ambient, diffused shadows with #410C09 tinted glow.",
+      "Dashboard: Crisp, structural shadows (e.g., shadow-sm, shadow-md) with #000000/5."
+    ],
+    "glassmorphism": [
+      "Navbar: Use backdrop-blur-xl with bg-[#410C09]/80 on dark sections, or bg-[#F5F1E7]/80 on light sections. Include a 1px border-white/10 to define the edge."
+    ]
+  },
+  "grids_and_layouts": {
+    "spacing_scale": "Use generous padding: py-20 to py-32 for marketing sections.",
+    "bento_grid": "For 'Achievements' and 'Packages', use an asymmetrical grid (e.g., span-2 for featured package, span-1 for standard) to create visual tension.",
+    "timeline": "Vertical staggered layout. Alternating left and right content blocks on desktop, single column on mobile.",
+    "gallery": "Masonry grid or tight asymmetric grid for performance imagery."
+  },
+  "components": {
+    "hero": "Cinematic full-height (100vh) hero. Background image/video with a bg-gradient-to-t from-[#0A0A0A] via-[#410C09]/50 to-transparent overlay. Large centered text.",
+    "navigation": "Sticky top bar. Z-index 50. Must include language switcher (EN/中文).",
+    "buttons": "Primary: bg-[#D4AF37] text-black rounded-sm hover:bg-white transition-colors. Secondary: border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 rounded-sm.",
+    "performance_packages": "3-tier pricing cards. Center/Featured card visually pops using a dark maroon background, while side cards use warm beige.",
+    "forms": "Use Shadcn components heavily customized (border-b only inputs, minimalist). Include WhatsApp API redirect link on submission if required."
+  },
+  "motion": {
+    "scrolling": "Implement smooth scrolling using Lenis.",
+    "reveals": "Use Framer Motion for scroll-triggered reveals (y: 40, opacity: 0 to y: 0, opacity: 1, duration 0.8s, ease: custom bezier).",
+    "hover_states": "Images in gallery should scale slightly (scale-105) on hover within an overflow-hidden container."
+  },
+  "image_urls": {
+    "hero_cinematic": "https://images.unsplash.com/photo-1524230659092-07f99a75c013?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85",
+    "texture_overlay": "https://images.unsplash.com/photo-1601662528567-526cd06f6582?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMHBhcGVyJTIwdGV4dHVyZSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzgyNjc0MzExfDA&ixlib=rb-4.1.0&q=85",
+    "students_team": "https://images.pexels.com/photos/6146977/pexels-photo-6146977.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "drum_close_up": "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxkcnVtJTIwcGVyZm9ybWFuY2V8ZW58MHx8fHwxNzg1NTEyMjIwfDA&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "Install and use 'framer-motion' for complex animations and scroll reveals.",
+    "Install and use 'lucide-react' for icons.",
+    "Ensure complete bilingual support structure (i18n ready) or build a simple context-based language toggler for EN/ZH.",
+    "Build standard marketing sections: Hero, About, History (Timeline), Gallery, Packages, Contact.",
+    "Build a separate /admin route featuring a standard dashboard layout (Sidebar + Content) with light theme (#FAFAFA background).",
+    "Use standard HTML/Tailwind for marketing layout blocks; reserve Shadcn strictly for interactive elements like Forms, Modals, Tabs, Dropdowns.",
+    "For the cultural aesthetic, avoid generic flat colors. Use the provided texture overlay image with low opacity over the maroon background to give it a 'drum skin' or 'canvas' feel."
+  ],
+  "universal_guidelines": [
+    "You tend to converge toward generic outputs. Break patterns: use asymmetric grids, extreme typography scaling, and textured backgrounds.",
+    "DO NOT use complete transparent backgrounds for the sticky header; always use backdrop-blur and a semi-transparent fill.",
+    "DO NOT center-align paragraph text globally.",
+    "All interactive elements MUST include a 'data-testid' attribute (e.g., data-testid='lang-switcher-btn').",
+    "Ensure text contrast ratios meet APCA standards. Light text on the dark maroon is required.",
+    "Create a cohesive experience with micro-interactions on all clickable elements."
+  ]
+}
