@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Header, Query, UploadFile, File, Form, Response
+from fastapi import FastAPI, APIRouter, HTTPException, Header, Query, UploadFile, File, Form, Response, Depends
 from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -335,21 +335,31 @@ async def seed_admin():
     existing = await db.users.find_one({"email": admin_email}, {"_id": 0})
     hashed = _hash_password(admin_password)
     if existing is None:
+        # First-ever seeded account becomes the master (only if no master exists yet)
+        has_master = await db.users.find_one({"role": "master"}, {"_id": 0})
         user = {
             "user_id": f"user_{uuid.uuid4().hex[:12]}",
             "email": admin_email,
             "name": "Admin",
             "picture": "",
-            "role": "admin",
+            "role": "admin" if has_master else "master",
             "password_hash": hashed,
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
         await db.users.insert_one(user)
-        logger.info(f"Admin seeded: {admin_email}")
+        logger.info(f"Admin seeded ({user['role']}): {admin_email}")
     else:
-        # Always sync the .env password so ops can rotate it
-        await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hashed, "role": "admin"}})
-        logger.info(f"Admin password synced: {admin_email}")
+        # Only sync password on first ever startup — after that, admins manage their own credentials
+        # in the UI. This prevents accidental password rotation from .env clobbering user changes.
+        if not existing.get("password_hash"):
+            await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hashed}})
+            logger.info(f"Admin password backfilled: {admin_email}")
+
+async def require_master(authorization: str = Header(None)):
+    user = await get_user_from_auth(authorization=authorization)
+    if getattr(user, "role", "admin") != "master":
+        raise HTTPException(status_code=403, detail="Master role required")
+    return user
 
 class LoginPayload(BaseModel):
     email: str
@@ -390,6 +400,98 @@ async def logout(authorization: str = Header(None)):
     session_token = authorization.replace("Bearer ", "")
     await db.user_sessions.delete_many({"session_token": session_token})
     return {"message": "Logged out"}
+
+class ChangePasswordPayload(BaseModel):
+    old_password: str
+    new_password: str
+
+@api_router.post("/auth/change-password")
+async def change_password(payload: ChangePasswordPayload, authorization: str = Header(None)):
+    user = await get_user_from_auth(authorization=authorization)
+    if len(payload.new_password) < 8:
+        raise HTTPException(status_code=400, detail="New password must be at least 8 characters")
+    doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not doc or not _verify_password(payload.old_password, doc.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"password_hash": _hash_password(payload.new_password)}}
+    )
+    # Invalidate ALL other sessions for this user so old cookies can't stay logged in.
+    current_token = authorization.replace("Bearer ", "")
+    await db.user_sessions.delete_many({"user_id": user.user_id, "session_token": {"$ne": current_token}})
+    return {"message": "Password updated"}
+
+class CreateAdminPayload(BaseModel):
+    email: str
+    password: str
+    name: str = ""
+
+def _serialize_admin(doc: dict) -> dict:
+    return {
+        "user_id": doc["user_id"],
+        "email": doc["email"],
+        "name": doc.get("name", ""),
+        "role": doc.get("role", "admin"),
+        "created_at": doc.get("created_at", ""),
+    }
+
+@api_router.get("/admins")
+async def list_admins(master=Depends(require_master)):
+    docs = await db.users.find({}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+    return [_serialize_admin(d) for d in docs]
+
+@api_router.post("/admins")
+async def create_admin(payload: CreateAdminPayload, master=Depends(require_master)):
+    email = payload.email.lower().strip()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Valid email is required")
+    if len(payload.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    if await db.users.find_one({"email": email}, {"_id": 0}):
+        raise HTTPException(status_code=409, detail="An account with this email already exists")
+    doc = {
+        "user_id": f"user_{uuid.uuid4().hex[:12]}",
+        "email": email,
+        "name": payload.name or email.split("@")[0],
+        "picture": "",
+        "role": "admin",
+        "password_hash": _hash_password(payload.password),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.users.insert_one(doc)
+    return _serialize_admin(doc)
+
+@api_router.delete("/admins/{user_id}")
+async def delete_admin(user_id: str, master=Depends(require_master)):
+    if user_id == master.user_id:
+        raise HTTPException(status_code=400, detail="You cannot delete your own account")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    if target.get("role") == "master":
+        raise HTTPException(status_code=400, detail="Cannot delete another master. Transfer master first.")
+    await db.users.delete_one({"user_id": user_id})
+    await db.user_sessions.delete_many({"user_id": user_id})
+    return {"message": "Deleted"}
+
+class TransferMasterPayload(BaseModel):
+    password: str
+
+@api_router.post("/admins/{user_id}/transfer-master")
+async def transfer_master(user_id: str, payload: TransferMasterPayload, master=Depends(require_master)):
+    if user_id == master.user_id:
+        raise HTTPException(status_code=400, detail="You are already the master")
+    # Re-verify current master's password as a safety check
+    me = await db.users.find_one({"user_id": master.user_id}, {"_id": 0})
+    if not me or not _verify_password(payload.password, me.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="Target admin not found")
+    await db.users.update_one({"user_id": master.user_id}, {"$set": {"role": "admin"}})
+    await db.users.update_one({"user_id": user_id}, {"$set": {"role": "master"}})
+    return {"message": "Master role transferred", "new_master": _serialize_admin({**target, "role": "master"})}
 
 @api_router.get("/club-info")
 async def get_club_info():

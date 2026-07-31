@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus, Instagram, Camera, Video, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, Image, Package, Users, Trophy, Settings, LogOut, FileText, MessageSquare, UserPlus, Instagram, Camera, Video, CalendarDays, KeyRound, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 
@@ -30,6 +30,7 @@ const AdminLayout = ({ children, user }) => {
     }
   };
 
+  const isMaster = user?.role === 'master';
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/admin/hero', label: 'Home Hero', icon: Camera },
@@ -44,6 +45,8 @@ const AdminLayout = ({ children, user }) => {
     { path: '/admin/team', label: 'Team', icon: Users },
     { path: '/admin/join-us', label: 'Join Us', icon: UserPlus },
     { path: '/admin/settings', label: 'Settings', icon: Settings },
+    { path: '/admin/account', label: 'My Account', icon: KeyRound },
+    ...(isMaster ? [{ path: '/admin/users', label: 'Admin Users', icon: Crown, badge: 'Master' }] : []),
   ];
 
   return (
@@ -70,7 +73,12 @@ const AdminLayout = ({ children, user }) => {
                     data-testid={`admin-nav-${item.path.split('/').pop()}`}
                   >
                     <Icon size={20} />
-                    <span>{item.label}</span>
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge && (
+                      <span className="text-[10px] uppercase tracking-widest font-bold text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
