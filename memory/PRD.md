@@ -66,15 +66,21 @@ Main purposes:
 - ✅ Added dynamic Hero Carousel on Home page (auto-rotates every 6s with arrows + dot navigation)
 - ✅ New backend endpoints: `GET/POST/DELETE /api/hero-images` with object storage
 - ✅ New admin page `/admin/hero` — drag & drop upload, caption EN/中文, delete
-- ✅ Cleaned unused imports (Users, Award, Calendar) in Home.jsx
 - ✅ Backend CRUD verified via curl (POST → GET → files → DELETE all 200)
 - ✅ Replaced Emergent OAuth with email/password login (`POST /api/auth/login`, bcrypt + session_token cookie)
 - ✅ Seeded admin ding.jiae@gmail.com / Utem24Drum!
 - ✅ Fixed Performance Booking nav to smooth-scroll (no page reload) + URL hash update
-- ✅ Removed About page/route
 - ✅ Booking section restyled to maroon (#410C09) + moved to bottom (under Instagram)
 - ✅ Council page (/team) and nav link restored
 - ✅ New `/admin/club-info` page — admin can edit homepage intro (about_en/about_zh), mission, and club numbers
+- ✅ Navbar brand shows "技大二十四节令鼓队" in 中文 mode
+- ✅ "Join Us" nav renamed to "Become a Drummer" / "成为鼓手"
+- ✅ New /about page with hero, 2-stat block (Established year + Performances), full history timeline, and mission
+- ✅ Home "Previous Performances / 值得回味的瞬间" section with videos + photo grid
+- ✅ New `PerformanceVideo` model + `/api/videos` GET/POST/DELETE (YouTube + Vimeo URL parsing)
+- ✅ New `/admin/videos` admin page — paste YouTube/Vimeo link, EN/中文 titles, delete
+- ✅ Removed /history route (single history source now on /about)
+- ✅ Iteration 6 testing: 100% backend + 100% frontend pass
 
 ## Test Results (Iteration 1)
 - **Backend API**: ✅ All GET/POST endpoints passing (5/5 GET, 2/2 POST)
