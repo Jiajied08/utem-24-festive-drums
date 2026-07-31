@@ -8,9 +8,11 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import AuthCallback from '@/components/AuthCallback';
 import Home from '@/pages/Home';
 import History from '@/pages/History';
+import Team from '@/pages/Team';
 import JoinUs from '@/pages/JoinUs';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminClubInfo from '@/pages/admin/AdminClubInfo';
 import AdminInstagram from '@/pages/admin/AdminInstagram';
 import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminEnquiries from '@/pages/admin/AdminEnquiries';
@@ -33,6 +35,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/history" element={<History />} />
+        <Route path="/team" element={<Team />} />
         <Route path="/join-us" element={<JoinUs />} />
         <Route path="/contact" element={<JoinUs />} />
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -41,6 +44,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/club-info"
+          element={
+            <ProtectedRoute>
+              <AdminClubInfo />
             </ProtectedRoute>
           }
         />

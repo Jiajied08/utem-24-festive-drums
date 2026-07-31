@@ -38,6 +38,7 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: t('Home', '首页') },
     { to: '/#booking', label: t('Performance Booking', '表演邀约'), hash: true, onClick: scrollToBooking },
+    { to: '/team', label: t('Council', '理事会') },
     { to: '/join-us', label: t('Join Us', '加入我们') },
   ];
 

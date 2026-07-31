@@ -1,0 +1,34 @@
+{
+  "summary": "Iteration 4: tested new /admin/club-info CRUD + restored Council nav/team page. Backend 21/21 tests pass (added test_club_info_crud.py). Frontend E2E flows all pass: 4-link navbar, /team page populated with members grouped by session, admin can edit About EN/中文 + numbers on /admin/club-info and Save Changes toast fires; homepage intro-section reflects new about_en text after save. Regressions (admin login, #booking hash) still work.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "verifications": {
+    "navbar_links": "Home, Performance Booking, Council, Join Us + language switcher all visible",
+    "council_link_navigates_to_team": "nav-link-team -> /team, team-page visible, members populated (grouped by session)",
+    "admin_login": "ding.jiae@gmail.com / Utem24Drum! -> /admin/dashboard",
+    "admin_club_info_loads": "input-about-en, input-about-zh, input-mission-en, input-mission-zh, input-year (2011), input-performances, input-members all render with current DB values",
+    "save_club_info": "PUT /api/club-info 200 + 'Saved' toast shown",
+    "homepage_reflects_edit": "After saving about_en='Homepage intro EN via UI UI_TEST_MARK_...', intro-section text contains the new marker on next page load",
+    "restore_original": "Original values restored via UI save so preview is clean",
+    "booking_hash": "window.location.hash == '#booking' after nav-link-booking click, no reload",
+    "backend_put_requires_auth": "PUT /api/club-info without token -> 401",
+    "backend_put_persists": "PUT then GET returns exact same about_en/about_zh/mission_en/mission_zh/counts"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_and_public.py",
+    "/app/backend/tests/test_club_info_crud.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminClubInfo reads session_token cookie directly via document.cookie parsing — works but consider centralizing auth header helper (also used by other admin pages).",
+    "PUT /api/club-info accepts full ClubInfo body; there is no partial-update path, so any missing field is reset to Pydantic defaults (0 for counts, '' for text). AdminClubInfo mitigates by seeding form via GET first, so behaviour is correct in the UI, but a raw PUT with partial payload would wipe fields."
+  ],
+  "updated_files": ["/app/backend/tests/test_club_info_crud.py"],
+  "success_rate": {"backend": "100% (21/21)", "frontend": "100%"},
+  "test_credentials": "ding.jiae@gmail.com / Utem24Drum! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None — test wrote temp club-info values and restored originals afterward.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend suite now covers /api/club-info PUT (auth-required + persistence). Sidebar 'Club Info' link goes to /admin/club-info. Homepage Home.jsx line 117 renders clubInfo.about_en/about_zh with hard-coded fallback when empty — confirmed reactive to admin edits."
+}

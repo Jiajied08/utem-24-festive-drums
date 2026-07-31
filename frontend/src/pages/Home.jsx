@@ -151,6 +151,55 @@ const Home = () => {
         </section>
       )}
 
+      {instagramPosts.length > 0 && (
+        <section className="py-20 bg-[#F5F1E7]" data-testid="instagram-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+                {t('Follow the Beat', '关注鼓声')}
+              </p>
+              <h2 className="font-heading text-3xl md:text-4xl text-[#410C09] mb-4">
+                {t('Latest from Instagram', 'Instagram 最新动态')}
+              </h2>
+              {settings?.instagram && (
+                <a
+                  href={`https://instagram.com/${settings.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[#410C09] hover:text-[#D4AF37] transition-colors"
+                  data-testid="instagram-profile-link"
+                >
+                  <Instagram size={20} />
+                  <span className="font-semibold">@{settings.instagram}</span>
+                </a>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {instagramPosts.slice(0, 6).map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  data-testid={`instagram-post-${index}`}
+                >
+                  <iframe
+                    src={`https://www.instagram.com/p/${post.shortcode}/embed/`}
+                    className="w-full"
+                    style={{ height: '500px', border: 0 }}
+                    loading="lazy"
+                    scrolling="no"
+                    allowFullScreen={false}
+                    title={`Instagram post ${post.shortcode}`}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section id="booking" className="py-24 md:py-32 bg-[#410C09] text-white relative overflow-hidden" data-testid="booking-section">
         <div className="absolute inset-0 texture-overlay pointer-events-none" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -210,85 +259,6 @@ const Home = () => {
               )}
             </p>
           </div>
-        </div>
-      </section>
-
-      {instagramPosts.length > 0 && (
-        <section className="py-20 bg-[#F5F1E7]" data-testid="instagram-section">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
-                {t('Follow the Beat', '关注鼓声')}
-              </p>
-              <h2 className="font-heading text-3xl md:text-4xl text-[#410C09] mb-4">
-                {t('Latest from Instagram', 'Instagram 最新动态')}
-              </h2>
-              {settings?.instagram && (
-                <a
-                  href={`https://instagram.com/${settings.instagram}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#410C09] hover:text-[#D4AF37] transition-colors"
-                  data-testid="instagram-profile-link"
-                >
-                  <Instagram size={20} />
-                  <span className="font-semibold">@{settings.instagram}</span>
-                </a>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {instagramPosts.slice(0, 6).map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                  data-testid={`instagram-post-${index}`}
-                >
-                  <iframe
-                    src={`https://www.instagram.com/p/${post.shortcode}/embed/`}
-                    className="w-full"
-                    style={{ height: '500px', border: 0 }}
-                    loading="lazy"
-                    scrolling="no"
-                    allowFullScreen={false}
-                    title={`Instagram post ${post.shortcode}`}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="py-32 bg-[#410C09] text-white" data-testid="cta-section">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl mb-6">
-              {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
-            </h2>
-            <p className="text-lg mb-8 text-gray-200">
-              {t(
-                'Contact us today to discuss your event requirements and receive a custom quotation.',
-                '立即联系我们，讨论您的活动需求并获取定制报价。'
-              )}
-            </p>
-            <a
-              href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about performance pricing.', '您好！我想咨询演出价格。'))}` : '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="cta-packages"
-            >
-              <Button size="lg" className="btn-primary px-8 py-6 text-lg">
-                {t('WhatsApp Us for Pricing', 'Whatsapp我们了解价格')}
-              </Button>
-            </a>
-          </motion.div>
         </div>
       </section>
     </div>
