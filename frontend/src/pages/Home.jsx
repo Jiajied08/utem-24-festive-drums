@@ -204,6 +204,67 @@ const Home = () => {
         </section>
       )}
 
+      <section className="py-24 md:py-32 bg-white" data-testid="booking-section">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+              {t('Performance Booking', '演出预订')}
+            </p>
+            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight text-[#410C09] mb-4">
+              {t('Now Open for Performance Bookings', '诚接各类演出邀约')}
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              {t(
+                'From opening ceremonies to major festivals — book UTeM 24FD to bring authentic 24 Festive Drums energy to your event.',
+                '从开幕仪式到大型节庆 — 邀请 UTeM 廿四节令鼓队为您的活动带来正宗的鼓声魅力。'
+              )}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {[
+              { title_en: 'Opening Performance', title_zh: '开场表演', desc_en: 'Openings, launches, short ceremonies', desc_zh: '开幕式、启动仪式、短期庆典', icon: '🎬' },
+              { title_en: 'Standard Performance', title_zh: '标准表演', desc_en: 'University, community, corporate events', desc_zh: '大学、社区、企业活动', icon: '🥁' },
+              { title_en: 'Premium Performance', title_zh: '高级表演', desc_en: 'Major celebrations, festivals, large-scale events', desc_zh: '重大庆祝活动、节日、大型活动', icon: '🎭' }
+            ].map((pkg, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="bg-[#F5F1E7] p-8 rounded-sm border border-transparent hover:border-[#D4AF37] transition-colors"
+                data-testid={`booking-tier-${idx}`}
+              >
+                <div className="text-4xl mb-4">{pkg.icon}</div>
+                <h3 className="font-heading text-2xl font-bold text-[#410C09] mb-2">
+                  {t(pkg.title_en, pkg.title_zh)}
+                </h3>
+                <p className="text-gray-700">{t(pkg.desc_en, pkg.desc_zh)}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <a
+              href={settings?.whatsapp_captain ? `https://wa.me/6${settings.whatsapp_captain}?text=${encodeURIComponent(t('Hello! I would like to enquire about booking a performance for my event.', '您好！我想咨询有关为我的活动预订演出的事宜。'))}` : '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="booking-cta-btn"
+            >
+              <Button size="lg" className="btn-primary px-8 py-6 text-lg">
+                {t('WhatsApp Us to Book', 'WhatsApp 联系预订')}
+              </Button>
+            </a>
+            <p className="text-sm text-gray-500 mt-4">
+              {t(
+                'Final quotation depends on location, duration, performers, transport, equipment and event schedule.',
+                '最终报价视地点、时长、人数、交通、设备及活动时间表而定。'
+              )}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {instagramPosts.length > 0 && (
         <section className="py-20 bg-[#F5F1E7]" data-testid="instagram-section">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -18,6 +18,8 @@ import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminEnquiries from '@/pages/admin/AdminEnquiries';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminHistory from '@/pages/admin/AdminHistory';
+import AdminAchievements from '@/pages/admin/AdminAchievements';
+import AdminTeam from '@/pages/admin/AdminTeam';
 
 function AppContent() {
   const location = useLocation();
@@ -82,6 +84,22 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/achievements"
+          element={
+            <ProtectedRoute>
+              <AdminAchievements />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/team"
+          element={
+            <ProtectedRoute>
+              <AdminTeam />
             </ProtectedRoute>
           }
         />
