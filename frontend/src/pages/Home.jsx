@@ -16,22 +16,25 @@ const Home = () => {
   const [clubInfo, setClubInfo] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [videos, setVideos] = useState([]);
+  const [posters, setPosters] = useState([]);
   const [instagramPosts, setInstagramPosts] = useState([]);
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [infoRes, galleryRes, videosRes, igRes, settingsRes] = await Promise.all([
+        const [infoRes, galleryRes, videosRes, postersRes, igRes, settingsRes] = await Promise.all([
           axios.get(`${API}/club-info`),
           axios.get(`${API}/gallery`),
           axios.get(`${API}/videos`),
+          axios.get(`${API}/posters?upcoming=true`),
           axios.get(`${API}/instagram-posts`),
           axios.get(`${API}/settings`)
         ]);
         setClubInfo(infoRes.data);
         setGallery(galleryRes.data.slice(0, 6));
         setVideos(videosRes.data);
+        setPosters(postersRes.data);
         setInstagramPosts(igRes.data);
         setSettings(settingsRes.data);
       } catch (error) {
@@ -123,6 +126,83 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+      {posters.length > 0 && (
+        <section className="py-20 md:py-24 bg-[#F5F1E7]" data-testid="upcoming-shows-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-bold text-[#D4AF37] mb-4">
+                {t('Upcoming Shows', '即将登场')}
+              </p>
+              <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl tracking-tight text-[#410C09] mb-4">
+                {t('Save the Dates', '锁定日期')}
+              </h2>
+              <p className="text-gray-700 max-w-2xl mx-auto">
+                {t(
+                  'Catch the drums live — here is where you can find us next.',
+                  '来现场感受鼓声 — 以下是接下来的演出安排。'
+                )}
+              </p>
+            </div>
+
+            <div className={`grid gap-6 ${posters.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : posters.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+              {posters.map((p, i) => {
+                const dateObj = p.event_date ? new Date(p.event_date) : null;
+                const day = dateObj ? dateObj.getDate() : '';
+                const month = dateObj
+                  ? dateObj.toLocaleString(undefined, { month: 'short' }).toUpperCase()
+                  : '';
+                const cardBody = (
+                  <>
+                    <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
+                      <img
+                        src={`${API}/files/${p.storage_path}`}
+                        alt={t(p.title_en, p.title_zh) || 'Event poster'}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
+                    {dateObj && (
+                      <div className="absolute top-3 left-3 bg-[#410C09] text-white rounded-sm px-3 py-2 text-center shadow-lg" data-testid={`poster-date-${i}`}>
+                        <div className="text-xs font-semibold text-[#D4AF37] leading-none">{month}</div>
+                        <div className="font-heading text-2xl leading-none mt-1">{day}</div>
+                      </div>
+                    )}
+                    <div className="p-4">
+                      {t(p.title_en, p.title_zh) && (
+                        <h3 className="font-heading text-xl font-bold text-[#410C09] mb-1">
+                          {t(p.title_en, p.title_zh)}
+                        </h3>
+                      )}
+                      {p.location && (
+                        <p className="text-sm text-gray-600">{p.location}</p>
+                      )}
+                    </div>
+                  </>
+                );
+                return (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: i * 0.08 }}
+                    className="group relative bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow"
+                    data-testid={`upcoming-poster-${i}`}
+                  >
+                    {p.event_link ? (
+                      <a href={p.event_link} target="_blank" rel="noopener noreferrer" className="block" data-testid={`poster-link-${i}`}>
+                        {cardBody}
+                      </a>
+                    ) : (
+                      cardBody
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {(gallery.length > 0 || videos.length > 0) && (
         <section className="py-20 md:py-24 bg-[#0A0A0A]" data-testid="previous-performances-section">

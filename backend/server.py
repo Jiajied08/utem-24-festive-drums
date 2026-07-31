@@ -238,6 +238,18 @@ class PerformanceVideo(BaseModel):
     is_active: bool = True
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+class EventPoster(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"pos_{uuid.uuid4().hex[:12]}")
+    storage_path: str
+    title_en: str = ""
+    title_zh: str = ""
+    event_date: str = ""  # ISO date YYYY-MM-DD
+    location: str = ""
+    event_link: str = ""
+    is_active: bool = True
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 def build_video_embed(url: str) -> Optional[str]:
     import re
     if not url:
@@ -787,6 +799,50 @@ async def create_video(payload: VideoCreatePayload, authorization: str = Header(
 async def delete_video(video_id: str, authorization: str = Header(None)):
     await get_user_from_auth(authorization=authorization)
     result = await db.performance_videos.update_one({"id": video_id}, {"$set": {"is_active": False}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
+
+@api_router.get("/posters")
+async def get_posters(upcoming: Optional[bool] = None):
+    query = {"is_active": True}
+    items = await db.event_posters.find(query, {"_id": 0}).to_list(1000)
+    if upcoming:
+        today = datetime.now(timezone.utc).date().isoformat()
+        items = [p for p in items if (p.get("event_date") or "") >= today]
+    items.sort(key=lambda p: (p.get("event_date") or "9999-12-31"))
+    return items
+
+@api_router.post("/posters")
+async def create_poster(
+    file: UploadFile = File(...),
+    title_en: str = Form(""),
+    title_zh: str = Form(""),
+    event_date: str = Form(""),
+    location: str = Form(""),
+    event_link: str = Form(""),
+    authorization: str = Header(None),
+):
+    await get_user_from_auth(authorization=authorization)
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    path = f"{APP_NAME}/posters/{uuid.uuid4()}.{ext}"
+    data = await file.read()
+    result = put_object(path, data, file.content_type or "image/jpeg")
+    item = EventPoster(
+        storage_path=result["path"],
+        title_en=title_en,
+        title_zh=title_zh,
+        event_date=event_date,
+        location=location,
+        event_link=event_link,
+    )
+    await db.event_posters.insert_one(item.model_dump())
+    return item
+
+@api_router.delete("/posters/{poster_id}")
+async def delete_poster(poster_id: str, authorization: str = Header(None)):
+    await get_user_from_auth(authorization=authorization)
+    result = await db.event_posters.update_one({"id": poster_id}, {"$set": {"is_active": False}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Not found")
     return {"message": "Deleted"}

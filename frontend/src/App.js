@@ -22,6 +22,7 @@ import AdminAchievements from '@/pages/admin/AdminAchievements';
 import AdminTeam from '@/pages/admin/AdminTeam';
 import AdminHeroImages from '@/pages/admin/AdminHeroImages';
 import AdminVideos from '@/pages/admin/AdminVideos';
+import AdminPosters from '@/pages/admin/AdminPosters';
 
 function AppContent() {
   const location = useLocation();
@@ -125,6 +126,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <AdminVideos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/posters"
+          element={
+            <ProtectedRoute>
+              <AdminPosters />
             </ProtectedRoute>
           }
         />

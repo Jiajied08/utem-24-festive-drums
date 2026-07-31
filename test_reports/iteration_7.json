@@ -1,0 +1,30 @@
+{
+  "summary": "Iteration 7 full-stack testing of Poster Gallery + Council Yearbook. Backend /api/posters passes 9/9 pytest cases (GET public 200, sorted ascending by event_date, upcoming=true filters past dates, POST requires auth (401), POST multipart accepts file+title_en/zh+event_date+location+event_link and returns id starting 'pos_' + storage_path, DELETE requires auth (401), DELETE soft-deletes and 404 on missing). Admin /admin/posters: login as ding.jiae@gmail.com works, 'Event Posters' sidebar item with calendar icon is present in correct order (Dashboard, Home Hero, Club Info, History, Gallery, Event Posters, Videos, ...). Form fields render with correct data-testids; uploading a PNG shows 'Poster uploaded' toast, card appears with 'Upcoming' badge (future date), delete confirmation dialog + 'Removed' toast + soft-remove all work. Home upcoming-shows-section renders only when >=1 upcoming poster (1 seeded 'Test Poster' visible), with poster-date-<i> badge (DEC / 31), title, location and poster-link-<i> when event_link is set (opens in new tab via target=_blank). Team /team renders yearbook UI (data-testid='team-page'/'yearbook'), single-session tabs + disabled prev/next arrows (only 1 session in current DB), active yearbook-page-<session> container rendered. Regression: navbar 5 links present (Home/About/Performance Booking/Council/Become a Drummer), Chinese language switcher button present, /#booking hash scrolls (offset 1019), previous-performances-section still renders. Login flow OK.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_posters.py",
+    "/app/test_reports/pytest/iter7_posters.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Team.jsx yearbook can only be verified for multi-session flip transitions once >=2 sessions exist in DB. With 1 session, prev/next arrows are correctly disabled per spec — but the flip animation itself was not stressed with live data. Consider seeding at least 2 sessions for full manual verification.",
+    "AdminPosters.jsx reads session_token from document.cookie manually (same DRY issue previously flagged in AdminVideos.jsx). A shared getAuth helper would reduce duplication across admin pages.",
+    "server.py has grown further with posters routes and is now ~862 lines — still recommend splitting into per-resource routers (posters, videos, team, etc.).",
+    "Home.jsx: date badge uses `new Date(p.event_date)` which is parsed as UTC for 'YYYY-MM-DD' strings — in negative-UTC timezones the day could shift by one. Low risk in MY timezone but worth noting."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_posters.py"
+  ],
+  "success_rate": {"backend": "100% (9/9 test_posters.py)", "frontend": "100% (all Poster + Yearbook + regression checks pass)"},
+  "test_credentials": "ding.jiae@gmail.com / Utem24Drum! (verified working)",
+  "seed_data_creation": "Pytest suite created + deleted its own poster during the run (auto-cleaned via soft delete). Uploaded a TEST_UI_Poster via admin UI and then removed it via admin UI. Pre-existing 'Test Poster / 2030-12-31' (id pos_753f10fd17a8) was left in place as noted by main agent.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Only 1 team session exists in DB, so yearbook flip animation with multiple pages was not verified end-to-end. Backend + admin + home upcoming + team single-session all verified. No functional bugs found. See critical_code_review_comments for minor architectural feedback.",
+  "rca of the issue": "N/A — no issues found."
+}
