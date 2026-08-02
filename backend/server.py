@@ -14,6 +14,8 @@ import requests
 import io
 import bcrypt
 import secrets
+import boto3
+from botocore.client import Config as BotoConfig
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +27,48 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
-EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+# --- File storage: Cloudflare R2 (S3-compatible) ---
+# Replaces Emergent's proprietary storage service so this can run outside the
+# Emergent platform for free. Create a free R2 bucket in the Cloudflare
+# dashboard and set these 4 env vars.
+R2_ACCOUNT_ID = os.environ.get("R2_ACCOUNT_ID")
+R2_ACCESS_KEY_ID = os.environ.get("R2_ACCESS_KEY_ID")
+R2_SECRET_ACCESS_KEY = os.environ.get("R2_SECRET_ACCESS_KEY")
+R2_BUCKET_NAME = os.environ.get("R2_BUCKET_NAME")
 APP_NAME = "utem-drum-club"
-storage_key = None
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+_s3_client = None
+
 def init_storage():
-    global storage_key
-    if storage_key:
-        return storage_key
-    try:
-        resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
-        resp.raise_for_status()
-        storage_key = resp.json()["storage_key"]
-        logger.info("Storage initialized successfully")
-        return storage_key
-    except Exception as e:
-        logger.error(f"Storage init failed: {e}")
-        raise
+    """Create (and cache) the boto3 S3 client pointed at Cloudflare R2."""
+    global _s3_client
+    if _s3_client:
+        return _s3_client
+    if not all([R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME]):
+        raise RuntimeError("R2 storage env vars are not fully set (R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET_NAME)")
+    _s3_client = boto3.client(
+        "s3",
+        endpoint_url=f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
+        aws_access_key_id=R2_ACCESS_KEY_ID,
+        aws_secret_access_key=R2_SECRET_ACCESS_KEY,
+        config=BotoConfig(signature_version="s3v4"),
+        region_name="auto",
+    )
+    logger.info("R2 storage client initialized")
+    return _s3_client
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
-    key = init_storage()
-    resp = requests.put(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key, "Content-Type": content_type},
-        data=data, timeout=120
-    )
-    resp.raise_for_status()
-    return resp.json()
+    s3 = init_storage()
+    s3.put_object(Bucket=R2_BUCKET_NAME, Key=path, Body=data, ContentType=content_type)
+    return {"path": path}
 
 def get_object(path: str) -> tuple:
-    key = init_storage()
-    resp = requests.get(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key}, timeout=60
-    )
-    resp.raise_for_status()
-    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+    s3 = init_storage()
+    obj = s3.get_object(Bucket=R2_BUCKET_NAME, Key=path)
+    return obj["Body"].read(), obj.get("ContentType", "application/octet-stream")
 
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
