@@ -14,8 +14,8 @@ import requests
 import io
 import bcrypt
 import secrets
-import boto3
-from botocore.client import Config as BotoConfig
+import gridfs
+from pymongo import MongoClient
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -27,48 +27,37 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-# --- File storage: Cloudflare R2 (S3-compatible) ---
-# Replaces Emergent's proprietary storage service so this can run outside the
-# Emergent platform for free. Create a free R2 bucket in the Cloudflare
-# dashboard and set these 4 env vars.
-R2_ACCOUNT_ID = os.environ.get("R2_ACCOUNT_ID")
-R2_ACCESS_KEY_ID = os.environ.get("R2_ACCESS_KEY_ID")
-R2_SECRET_ACCESS_KEY = os.environ.get("R2_SECRET_ACCESS_KEY")
-R2_BUCKET_NAME = os.environ.get("R2_BUCKET_NAME")
+# --- File storage: MongoDB GridFS ---
+# Replaces Emergent's proprietary storage service. Files (images/PDFs) are
+# stored directly in the same MongoDB Atlas database as everything else, so
+# no extra account, API key, or card is needed anywhere.
 APP_NAME = "utem-drum-club"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-_s3_client = None
+# GridFS needs a *synchronous* pymongo client (motor's client above is async-only).
+_sync_mongo_client = MongoClient(mongo_url)
+_sync_db = _sync_mongo_client[os.environ['DB_NAME']]
+fs = gridfs.GridFS(_sync_db, collection="uploads")
 
 def init_storage():
-    """Create (and cache) the boto3 S3 client pointed at Cloudflare R2."""
-    global _s3_client
-    if _s3_client:
-        return _s3_client
-    if not all([R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME]):
-        raise RuntimeError("R2 storage env vars are not fully set (R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET_NAME)")
-    _s3_client = boto3.client(
-        "s3",
-        endpoint_url=f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com",
-        aws_access_key_id=R2_ACCESS_KEY_ID,
-        aws_secret_access_key=R2_SECRET_ACCESS_KEY,
-        config=BotoConfig(signature_version="s3v4"),
-        region_name="auto",
-    )
-    logger.info("R2 storage client initialized")
-    return _s3_client
+    """Kept for compatibility with the startup() health check below."""
+    _sync_mongo_client.admin.command("ping")
+    logger.info("GridFS storage ready")
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
-    s3 = init_storage()
-    s3.put_object(Bucket=R2_BUCKET_NAME, Key=path, Body=data, ContentType=content_type)
+    existing = _sync_db["uploads.files"].find_one({"filename": path})
+    if existing:
+        fs.delete(existing["_id"])
+    fs.put(data, filename=path, content_type=content_type)
     return {"path": path}
 
 def get_object(path: str) -> tuple:
-    s3 = init_storage()
-    obj = s3.get_object(Bucket=R2_BUCKET_NAME, Key=path)
-    return obj["Body"].read(), obj.get("ContentType", "application/octet-stream")
+    grid_file = fs.find_one({"filename": path})
+    if not grid_file:
+        raise FileNotFoundError(path)
+    return grid_file.read(), grid_file.content_type or "application/octet-stream"
 
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
